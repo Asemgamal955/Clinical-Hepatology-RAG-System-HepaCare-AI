@@ -16,6 +16,7 @@ Usage:  python -m src.indexing.embeddings
 import json
 import os
 import time
+from pathlib import Path
 
 import cohere
 import numpy as np
@@ -29,7 +30,7 @@ DIMENSION = 1024  # v4 also supports 256/512/1536
 BATCH_SIZE = 96  # Cohere's per-call maximum
 MAX_RETRIES = 5
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 def get_client():
