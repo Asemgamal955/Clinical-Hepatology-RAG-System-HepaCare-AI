@@ -1,0 +1,7 @@
+requests>=2.32
+beautifulsoup4>=4.13
+pypdf>=6.0
+cohere>=7.0
+chromadb>=1.5
+python-dotenv>=1.0
+numpy>=1.26
