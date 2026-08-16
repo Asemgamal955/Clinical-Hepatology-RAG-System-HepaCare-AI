@@ -1,0 +1,20 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# data artifacts
+data/processed/
+data/embeddings/
+*.faiss
+
+# editors
+.vscode/
+.idea/
