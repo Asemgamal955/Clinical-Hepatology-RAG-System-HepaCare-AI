@@ -1,22 +1,15 @@
-# main.py
 import argparse
-import json
 import os
-import sys
 from pathlib import Path
-
-import numpy as np
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
-# Import pipeline components
-from src.indexing.parse_chunk import main as run_parse_chunk, OUT_PATH as CHUNKS_PATH
-from src.indexing.embeddings import main as run_embeddings, embed_query, load_chunks
-from src.generation import Gemini
-
-VECTORS_PATH = os.path.join("data", "embeddings", "vectors.npy")
-IDS_PATH = os.path.join("data", "embeddings", "ids.json")
+from src.config import VECTORS_PATH
+from src.indexing.parse import main as run_parse_chunk
+from src.indexing.embeddings import main as run_embeddings
+from src.generation import run_rag
 
 
 # ==========================================
@@ -34,78 +27,7 @@ def index_pipeline():
 
 
 # ==========================================
-# 2. Vector Search / Retrieval Engine
-# ==========================================
-
-def retrieve(query: str, top_k: int = 5) -> list[dict]:
-    """Retrieve top-k most relevant chunks for a given user query."""
-    if not os.path.exists(VECTORS_PATH) or not os.path.exists(CHUNKS_PATH):
-        raise FileNotFoundError(
-            "Index files missing! Run `python main.py --index` first to build the search database."
-        )
-
-    # Load pre-indexed data
-    chunks = load_chunks(CHUNKS_PATH)
-    vectors = np.load(VECTORS_PATH)
-
-    # Embed query vector
-    query_vec = embed_query(query)
-
-    # Compute cosine similarity (dot product on normalized vectors)
-    similarities = np.dot(vectors, query_vec)
-    top_indices = np.argsort(similarities)[::-1][:top_k]
-
-    results = []
-    for idx in top_indices:
-        chunk = chunks[idx].copy()
-        chunk["score"] = float(similarities[idx])
-        results.append(chunk)
-
-    return results
-
-
-# ==========================================
-# 3. RAG Pipeline & Generation
-# ==========================================
-
-def run_rag(query: str, top_k: int = 4, stream: bool = True):
-    """Execute full RAG generation pipeline."""
-    print(f"\n[Query]: {query}\n")
-    print(f"Retrieving top {top_k} contexts...")
-    retrieved_chunks = retrieve(query, top_k=top_k)
-
-    # Build context block utilizing section hierarchy
-    context_blocks = []
-    for i, c in enumerate(retrieved_chunks, 1):
-        context_blocks.append(
-            f"--- Context [{i}] (Score: {c['score']:.3f}) ---\n"
-            f"Source: {c['url']} | Path: {c['section_path']}\n"
-            f"Content:\n{c['text']}"
-        )
-    context_str = "\n\n".join(context_blocks)
-
-    system_instruction = (
-        "You are an expert technical AI assistant. Answer the user's question accurately "
-        "and concisely using solely the provided context chunks. Cite sources or section "
-        "paths where appropriate. If the answer cannot be determined from context, state so."
-    )
-
-    prompt = f"Context:\n{context_str}\n\nUser Question: {query}\n\nAnswer:"
-
-    llm = Gemini(model="gemini-2.5-flash", system_instruction=system_instruction)
-
-    print("\n[Gemini Answer]:")
-    if stream:
-        for chunk in llm.generate_stream(prompt):
-            print(chunk, end="", flush=True)
-        print("\n")
-    else:
-        response = llm.generate(prompt)
-        print(response)
-
-
-# ==========================================
-# 4. CLI Entry Point
+# 2. CLI Entry Point
 # ==========================================
 
 def main():

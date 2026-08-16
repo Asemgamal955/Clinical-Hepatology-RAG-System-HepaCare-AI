@@ -22,11 +22,8 @@ import cohere
 import numpy as np
 from dotenv import load_dotenv
 
-CHUNKS_PATH = os.path.join("data", "processed", "chunks.jsonl")
-OUT_DIR = os.path.join("data", "embeddings")
+from src.config import CHUNKS_PATH, EMBEDDINGS_DIR as OUT_DIR, EMBEDDING_MODEL as MODEL, EMBEDDING_DIMENSION as DIMENSION
 
-MODEL = "embed-v4.0"
-DIMENSION = 1024  # v4 also supports 256/512/1536
 BATCH_SIZE = 96  # Cohere's per-call maximum
 MAX_RETRIES = 5
 
