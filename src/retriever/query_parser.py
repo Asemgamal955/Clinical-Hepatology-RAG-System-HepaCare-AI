@@ -30,7 +30,8 @@ import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-
+from google import genai
+from google.genai import types  # Import type
 from dotenv import load_dotenv
 
 from src.config import LLM_MODEL
@@ -84,18 +85,29 @@ STOPWORDS = {
     "why", "will", "with", "would", "you", "your",
 }
 
-_PROMPT = """You rewrite patient questions about liver disease for a search engine.
+_CLINICAL_DICT_TEXT = "\n".join(
+    f"  - '{k}' -> '{v}'" for k, v in CLINICAL_TERMS.items()
+)
 
-Return ONLY a JSON object with exactly these two keys:
-  "dense_query":  a clear clinical rephrasing as a full sentence or noun phrase,
-                  using standard medical terminology.
-  "sparse_query": the key medical terms only, space separated, no stopwords,
-                  no punctuation.
+_PROMPT = f"""You rewrite patient questions about liver disease for a search engine (Dense Vector + BM25 Sparse).
 
-Keep every clinical term, acronym, and lab name that appears in the question.
-Do not invent conditions the user did not mention.
+### Canonical Term Mappings (Preferred Corpus Terms):
+When colloquial or abbreviated terms match these keys, prefer these target terms:
+{_CLINICAL_DICT_TEXT}
 
-Question: {query}"""
+### Instructions:
+Return ONLY a valid JSON object with exactly two keys:
+1. "dense_query": A clear clinical rephrasing as a full sentence using standard medical terminology.
+2. "sparse_query": Key medical terms only, space-separated, no stopwords, no punctuation.
+
+### Rules:
+- The dictionary above provides preferred terms, but you are NOT strictly restricted to it.
+- If the query mentions symptoms, conditions, or labs NOT listed in the dictionary, use your clinical knowledge to select and include the appropriate medical terms and keywords.
+- Include the canonical dictionary mappings whenever a matching colloquial phrase is present.
+- Retain core user keywords while removing non-informative stopwords/question scaffolding.
+
+Question: {{query}}
+JSON Output:"""
 
 _client = None
 
@@ -160,7 +172,6 @@ def _get_client():
 
 
 def _llm_rewrite(query):
-    """Ask the LLM for both forms. Returns None if unavailable or malformed."""
     client = _get_client()
     if client is None:
         return None
@@ -168,7 +179,9 @@ def _llm_rewrite(query):
         response = client.models.generate_content(
             model=LLM_MODEL,
             contents=_PROMPT.format(query=query),
-            config={"response_mime_type": "application/json"},
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json"
+            ),
         )
         data = json.loads(response.text)
         dense = str(data.get("dense_query", "")).strip()
@@ -176,7 +189,8 @@ def _llm_rewrite(query):
         if dense and sparse:
             return dense, sparse
     except Exception as exc:
-        print(f"  query rewrite unavailable ({type(exc).__name__}), using dictionary only")
+        # Print full exception details for quick debugging
+        print(f"  query rewrite unavailable ({type(exc).__name__}: {exc}), using dictionary only")
     return None
 
 

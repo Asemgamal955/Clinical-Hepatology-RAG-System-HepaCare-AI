@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
-from src.config import VECTORS_PATH
+from src.vector_db.collections import get_collection
 from src.indexing.parse import main as run_parse_chunk
-from src.indexing.embeddings import main as run_embeddings
+from src.vector_db.collections import build as run_build_index
 from src.generation import run_rag
 
 
@@ -17,12 +17,12 @@ from src.generation import run_rag
 # ==========================================
 
 def index_pipeline():
-    """Run end-to-end processing from raw files to embedded vectors."""
+    """Run end-to-end processing from raw files into Chroma vector store."""
     print("=== Step 1: Parsing & Chunking Raw Data ===")
     run_parse_chunk()
 
-    print("\n=== Step 2: Generating Cohere Embeddings ===")
-    run_embeddings()
+    print("\n=== Step 2: Embedding & Indexing into Chroma ===")
+    run_build_index()
     print("\nIndexing completed successfully!")
 
 
@@ -44,7 +44,7 @@ def main():
         run_rag(args.query, top_k=args.top_k)
     else:
         # Interactive loop if no flags supplied
-        if not os.path.exists(VECTORS_PATH):
+        if get_collection().count() == 0:
             print("No index detected. Building vector index now...")
             index_pipeline()
 
