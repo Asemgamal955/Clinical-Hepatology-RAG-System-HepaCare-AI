@@ -13,6 +13,7 @@ venv/
 # data artifacts
 data/processed/
 data/embeddings/
+data/chroma/
 *.faiss
 
 # editors

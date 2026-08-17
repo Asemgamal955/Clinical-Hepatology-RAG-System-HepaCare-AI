@@ -3,5 +3,11 @@ beautifulsoup4>=4.13
 pypdf>=6.0
 cohere>=7.0
 chromadb>=1.5
+rank_bm25>=0.2
 python-dotenv>=1.0
 numpy>=1.26
+
+# parser (src/indexing/parse_chunk.py)
+ftfy>=6.0
+pymupdf4llm>=0.0.17
+wordninja>=2.0
