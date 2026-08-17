@@ -10,11 +10,6 @@ __pycache__/
 venv/
 *.egg-info/
 
-# data artifacts
-data/processed/
-data/embeddings/
-data/chroma/
-*.faiss
 
 # editors
 .vscode/
