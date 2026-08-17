@@ -9,7 +9,8 @@ numpy>=1.26
 google-genai>=1.0
 pydantic>=2.0
 
-# parser (src/indexing/parse_chunk.py)
+# parsing + semantic chunking (src/indexing/parse.py, src/indexing/chunk.py)
 ftfy>=6.0
 pymupdf4llm>=0.0.17
-wordninja>=2.0
+langchain-cohere>=0.4
+langchain-experimental>=0.3
