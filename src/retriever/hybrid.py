@@ -23,6 +23,7 @@ import sys
 from rank_bm25 import BM25Okapi
 
 from src.indexing.embeddings import CHUNKS_PATH
+from src.retriever.query_parser import ParsedQuery, parse_query
 from src.retriever.retriever import dense_search
 
 CANDIDATES = 50  # per leg, before fusion
@@ -109,6 +110,7 @@ def hybrid_search(
     dense_weight=DENSE_WEIGHT,
     sparse_weight=SPARSE_WEIGHT,
     rerank=False,
+    parse=True,
 ):
     """
     Run both legs and fuse by weighted reciprocal rank.
@@ -116,13 +118,28 @@ def hybrid_search(
     Returns up to `k` hits sorted by fused score, each annotated with whichever
     of `dense_rank` / `bm25_rank` it earned, so you can see which leg found it.
 
+    `query` may be a string or an already-built ParsedQuery. With `parse=True`
+    a string is run through the query parser first, so each leg receives the
+    form it wants; `parse=False` sends the raw string to both.
+
     With `rerank=True` the fused list is widened to RERANK_CANDIDATES and
     handed to the cross-encoder, which picks the final k. Fusion then only has
     to get the right chunk somewhere into the shortlist rather than at the top,
     so the exact leg weights matter much less.
     """
-    dense = dense_search(query, k=candidates, corpus=corpus, topic=topic, section=section)
-    sparse = sparse_search(query, k=candidates, corpus=corpus, topic=topic, section=section)
+    if isinstance(query, ParsedQuery):
+        parsed = query
+    elif parse:
+        parsed = parse_query(query)
+    else:
+        parsed = ParsedQuery(raw=query, dense_query=query, sparse_query=query)
+
+    dense = dense_search(
+        parsed.dense_query, k=candidates, corpus=corpus, topic=topic, section=section
+    )
+    sparse = sparse_search(
+        parsed.sparse_query, k=candidates, corpus=corpus, topic=topic, section=section
+    )
 
     fused = {}
     for hits, weight in ((dense, dense_weight), (sparse, sparse_weight)):
@@ -140,7 +157,10 @@ def hybrid_search(
     if rerank:
         from src.retriever.reranker import rerank as _rerank
 
-        return _rerank(query, ranked[:RERANK_CANDIDATES], top_n=k)
+        # Reranked against the user's actual question, not the rewrite. The
+        # cross-encoder is the last stage that can correct a bad rewrite, so
+        # feeding it the rewrite would compound the error instead.
+        return _rerank(parsed.raw, ranked[:RERANK_CANDIDATES], top_n=k)
     return ranked[:k]
 
 

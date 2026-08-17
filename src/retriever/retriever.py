@@ -27,12 +27,19 @@ def dense_search(query, k=5, corpus=None, topic=None, section=None):
 
 def retrieve(query: str, top_k: int = 5) -> list[dict]:
     """
-    Baseline entry point, kept so app.py and the generation pipeline keep
-    working. Baseline scanned vectors.npy directly with numpy; this goes
-    through Chroma instead, which gives the same ranking plus metadata
-    filtering and does not reload the corpus on every call.
+    The entry point app.py and the generation pipeline call.
+
+    This runs the full retrieval stack - query parsing, BM25 fused with dense,
+    then cross-encoder reranking - not just the dense leg. Everything
+    downstream goes through this one function, so anything it skips is dead
+    code no matter how well it works in isolation.
+
+    Imported inside the function because hybrid imports dense_search from this
+    module; at module level the two would deadlock on import.
     """
-    return dense_search(query, k=top_k)
+    from src.retriever.hybrid import hybrid_search
+
+    return hybrid_search(query, k=top_k, rerank=True, parse=True)
 
 
 def main():
