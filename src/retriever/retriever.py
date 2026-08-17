@@ -25,6 +25,16 @@ def dense_search(query, k=5, corpus=None, topic=None, section=None):
     return hits
 
 
+def retrieve(query: str, top_k: int = 5) -> list[dict]:
+    """
+    Baseline entry point, kept so app.py and the generation pipeline keep
+    working. Baseline scanned vectors.npy directly with numpy; this goes
+    through Chroma instead, which gives the same ranking plus metadata
+    filtering and does not reload the corpus on every call.
+    """
+    return dense_search(query, k=top_k)
+
+
 def main():
     query = sys.argv[1] if len(sys.argv) > 1 else "What causes cirrhosis?"
     print(f"query: {query}\n")
