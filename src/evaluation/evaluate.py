@@ -39,14 +39,15 @@ DEFAULT_K = 5
 # Each config is a retrieval function taking (query, k) and returning hits.
 # Kept lazy so importing this module does not spin up Chroma or Cohere.
 CONFIGS = {
-    # Query expansion is no longer optional or LLM-driven: hybrid_search always
-    # applies the clinical dictionary, giving the dense leg expanded prose and
-    # BM25 the same text with stopwords stripped. The old parse/no-parse and
-    # keep_raw variants are gone with it, so what is left to compare is which
-    # retrieval legs run and whether the cross-encoder reorders them.
     "dense": lambda q, k: _dense(q, k),
-    "hybrid": lambda q, k: _hybrid(q, k, rerank=False),
-    "hybrid_rerank": lambda q, k: _hybrid(q, k, rerank=True),
+    "hybrid": lambda q, k: _hybrid(q, k, rerank=False, parse=False),
+    "hybrid_parse": lambda q, k: _hybrid(q, k, rerank=False, parse=True),
+    "hybrid_rerank": lambda q, k: _hybrid(q, k, rerank=True, parse=False),
+    "full": lambda q, k: _hybrid(q, k, rerank=True, parse=True),
+    # Same two, but searching only the rewrite - the baseline for whether
+    # also searching the user's own wording is worth an extra embedding.
+    "parse_norawq": lambda q, k: _hybrid(q, k, rerank=False, parse=True, keep_raw=False),
+    "full_norawq": lambda q, k: _hybrid(q, k, rerank=True, parse=True, keep_raw=False),
 }
 
 
@@ -56,10 +57,10 @@ def _dense(query, k):
     return dense_search(query, k=k)
 
 
-def _hybrid(query, k, rerank, **kw):
+def _hybrid(query, k, rerank, parse, **kw):
     from src.retriever.hybrid import hybrid_search
 
-    return hybrid_search(query, k=k, rerank=rerank, **kw)
+    return hybrid_search(query, k=k, rerank=rerank, parse=parse, **kw)
 
 
 def load_queries(path=QUERIES_PATH, validate=True):
