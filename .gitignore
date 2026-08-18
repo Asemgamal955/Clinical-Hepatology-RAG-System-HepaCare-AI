@@ -14,3 +14,4 @@ venv/
 # editors
 .vscode/
 .idea/
+data/chroma/

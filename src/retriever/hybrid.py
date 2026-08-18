@@ -20,9 +20,10 @@ import json
 import re
 import sys
 
+
 from rank_bm25 import BM25Okapi
 
-from src.indexing.embeddings import CHUNKS_PATH
+from src.config import CHUNKS_PATH
 from src.retriever.query_parser import ParsedQuery, parse_query
 from src.retriever.retriever import dense_search
 

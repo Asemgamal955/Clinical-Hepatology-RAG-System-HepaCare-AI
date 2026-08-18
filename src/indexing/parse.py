@@ -72,8 +72,9 @@ def parse_pdf(path: str) -> list[dict]:
     records = []
     for section in sections:
         clean_body = clean_text_for_embedding(section["body"])
+        if not clean_body:
+            continue
 
-        # Replaced word-packing with Semantic Chunking
         for piece in chunk_text_semantically(clean_body):
             if len(piece.split()) < 20:  # Skip trivial fragments
                 continue
