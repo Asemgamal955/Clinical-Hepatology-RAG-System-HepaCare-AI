@@ -1,10 +1,35 @@
-{"query": "When should screening for Hepatitis B virus infection be conducted in pregnant women according to the USPSTF?", "relevant_ids": ["pdf_documents-0000", "pdf_documents-0005", "pdf_documents-0008"], "source_chunk": "pdf_documents-0000"}
-{"query": "What are the common risk factors for contracting Hepatitis B infection in adults in the United States?", "relevant_ids": ["pdf_documents-0005", "pdf_documents-0015"], "source_chunk": "pdf_documents-0005"}
-{"query": "What primary screening test is used to detect maternal Hepatitis B virus infection?", "relevant_ids": ["pdf_documents-0005", "pdf_documents-0007"], "source_chunk": "pdf_documents-0007"}
-{"query": "Which age group is recommended by the USPSTF for Hepatitis C virus screening?", "relevant_ids": ["pdf_documents-0036", "pdf_documents-0038", "pdf_documents-0041"], "source_chunk": "pdf_documents-0036"}
-{"query": "What is the single most important risk factor for Hepatitis C virus infection in the United States?", "relevant_ids": ["pdf_documents-0039", "pdf_documents-0043"], "source_chunk": "pdf_documents-0039"}
-{"query": "What are the standard medications or interventions used to treat chronic Hepatitis C infection?", "relevant_ids": ["pdf_documents-0041", "pdf_documents-0048"], "source_chunk": "pdf_documents-0048"}
-{"query": "What underlying physical defect defines Alagille syndrome within the liver?", "relevant_ids": ["niddk_liver-0072"], "source_chunk": "niddk_liver-0072"}
-{"query": "What primary genetic mutations are responsible for causing Alagille syndrome?", "relevant_ids": ["niddk_liver-0077"], "source_chunk": "niddk_liver-0077"}
-{"query": "What physical signs and symptoms in the body might indicate a diagnosis of Alagille syndrome?", "relevant_ids": ["niddk_liver-0076", "niddk_liver-0078"], "source_chunk": "niddk_liver-0076"}
-{"query": "What dietary changes or nutritional plans are recommended for individuals with Alagille syndrome?", "relevant_ids": ["niddk_liver-0084"], "source_chunk": "niddk_liver-0084"}
+{"query": "When should screening for Hepatitis B virus infection be conducted in pregnant women according to the USPSTF?", "relevant_ids": ["pdf_documents-0000", "pdf_documents-0005", "pdf_documents-0007", "pdf_documents-0024"], "topic": "hepatitis b screening", "query_type": "guideline"}
+{"query": "What are the common risk factors for contracting Hepatitis B infection in adults in the United States?", "relevant_ids": ["pdf_documents-0015", "niddk_liver-0277"], "topic": "hepatitis b", "query_type": "clinical"}
+{"query": "What primary screening test is used to detect maternal Hepatitis B virus infection?", "relevant_ids": ["pdf_documents-0005", "pdf_documents-0007", "pdf_documents-0023", "pdf_documents-0024"], "topic": "hepatitis b screening", "query_type": "clinical"}
+{"query": "Which age group is recommended by the USPSTF for Hepatitis C virus screening?", "relevant_ids": ["pdf_documents-0038", "pdf_documents-0040", "pdf_documents-0041", "pdf_documents-0043"], "topic": "hepatitis c screening", "query_type": "guideline"}
+{"query": "What is the single most important risk factor for Hepatitis C virus infection in the United States?", "relevant_ids": ["pdf_documents-0039", "pdf_documents-0043", "niddk_liver-0291"], "topic": "hepatitis c", "query_type": "clinical"}
+{"query": "What are the standard medications or interventions used to treat chronic Hepatitis C infection?", "relevant_ids": ["pdf_documents-0048", "pdf_documents-0051", "pdf_documents-0055", "niddk_liver-0297"], "topic": "hepatitis c", "query_type": "clinical"}
+{"query": "How often should adults at continued risk be screened for hepatitis C?", "relevant_ids": ["pdf_documents-0045"], "topic": "hepatitis c screening", "query_type": "guideline"}
+{"query": "What interventions prevent perinatal transmission of hepatitis B at birth?", "relevant_ids": ["pdf_documents-0006", "pdf_documents-0010", "pdf_documents-0011"], "topic": "hepatitis b screening", "query_type": "clinical"}
+{"query": "What underlying physical defect defines Alagille syndrome within the liver?", "relevant_ids": ["niddk_liver-0072"], "topic": "alagille syndrome", "query_type": "clinical"}
+{"query": "What primary genetic mutations are responsible for causing Alagille syndrome?", "relevant_ids": ["niddk_liver-0077"], "topic": "alagille syndrome", "query_type": "clinical"}
+{"query": "What physical signs and symptoms in the body might indicate a diagnosis of Alagille syndrome?", "relevant_ids": ["niddk_liver-0076", "niddk_liver-0078"], "topic": "alagille syndrome", "query_type": "clinical"}
+{"query": "What dietary changes or nutritional plans are recommended for individuals with Alagille syndrome?", "relevant_ids": ["niddk_liver-0083", "niddk_liver-0084", "niddk_liver-0085"], "topic": "alagille syndrome", "query_type": "patient"}
+{"query": "What causes cirrhosis of the liver?", "relevant_ids": ["niddk_liver-0126"], "topic": "cirrhosis", "query_type": "clinical"}
+{"query": "What are the symptoms of cirrhosis?", "relevant_ids": ["niddk_liver-0125"], "topic": "cirrhosis", "query_type": "patient"}
+{"query": "How do doctors treat cirrhosis and its complications?", "relevant_ids": ["niddk_liver-0129", "niddk_liver-0130", "niddk_liver-0131"], "topic": "cirrhosis", "query_type": "clinical"}
+{"query": "What should I eat or avoid if I have cirrhosis?", "relevant_ids": ["niddk_liver-0134", "niddk_liver-0135", "niddk_liver-0136"], "topic": "cirrhosis", "query_type": "patient"}
+{"query": "What should I eat if I have fatty liver disease?", "relevant_ids": ["niddk_liver-0193"], "topic": "nafld", "query_type": "patient"}
+{"query": "How do doctors treat nonalcoholic fatty liver disease?", "relevant_ids": ["niddk_liver-0190", "niddk_liver-0191"], "topic": "nafld", "query_type": "clinical"}
+{"query": "What causes fatty liver in people who do not drink alcohol?", "relevant_ids": ["niddk_liver-0186", "niddk_liver-0187"], "topic": "nafld", "query_type": "clinical"}
+{"query": "Who is more likely to develop NAFLD in children?", "relevant_ids": ["niddk_liver-0199"], "topic": "nafld children", "query_type": "clinical"}
+{"query": "What medications remove excess copper in Wilson disease?", "relevant_ids": ["niddk_liver-0340", "niddk_liver-0341", "niddk_liver-0342"], "topic": "wilson disease", "query_type": "clinical"}
+{"query": "What are the symptoms of copper buildup in Wilson disease?", "relevant_ids": ["niddk_liver-0336"], "topic": "wilson disease", "query_type": "patient"}
+{"query": "What happens when you have too much iron in your body?", "relevant_ids": ["niddk_liver-0140", "niddk_liver-0144", "niddk_liver-0145"], "topic": "hemochromatosis", "query_type": "patient"}
+{"query": "How do doctors treat hemochromatosis to lower iron levels?", "relevant_ids": ["niddk_liver-0149", "niddk_liver-0150"], "topic": "hemochromatosis", "query_type": "clinical"}
+{"query": "How is hepatitis A spread from person to person?", "relevant_ids": ["niddk_liver-0263", "niddk_liver-0268"], "topic": "hepatitis a", "query_type": "clinical"}
+{"query": "Why can hepatitis D only infect someone who already has hepatitis B?", "relevant_ids": ["niddk_liver-0304", "niddk_liver-0305"], "topic": "hepatitis d", "query_type": "clinical"}
+{"query": "Is there a vaccine available for hepatitis E?", "relevant_ids": ["niddk_liver-0327"], "topic": "hepatitis e", "query_type": "patient"}
+{"query": "What are the symptoms of primary biliary cholangitis?", "relevant_ids": ["niddk_liver-0233"], "topic": "pbc", "query_type": "clinical"}
+{"query": "How do doctors treat PSC and its complications?", "relevant_ids": ["niddk_liver-0255", "niddk_liver-0256"], "topic": "psc", "query_type": "acronym"}
+{"query": "When do people need a liver transplant?", "relevant_ids": ["niddk_liver-0158"], "topic": "liver transplant", "query_type": "clinical"}
+{"query": "What are the survival rates after a liver transplant?", "relevant_ids": ["niddk_liver-0160"], "topic": "liver transplant", "query_type": "clinical"}
+{"query": "What medicines are used to treat autoimmune hepatitis and what are their side effects?", "relevant_ids": ["niddk_liver-0099", "niddk_liver-0100"], "topic": "autoimmune hepatitis", "query_type": "clinical"}
+{"query": "What are the two main types of autoimmune hepatitis?", "relevant_ids": ["niddk_liver-0090"], "topic": "autoimmune hepatitis", "query_type": "clinical"}
+{"query": "What is the earliest sign of biliary atresia in newborn infants?", "relevant_ids": ["niddk_liver-0110"], "topic": "biliary atresia", "query_type": "patient"}
+{"query": "What are the symptoms of an acute porphyria attack?", "relevant_ids": ["niddk_liver-0220"], "topic": "porphyria", "query_type": "clinical"}
