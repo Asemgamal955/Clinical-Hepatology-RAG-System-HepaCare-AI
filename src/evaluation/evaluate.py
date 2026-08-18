@@ -140,29 +140,42 @@ def print_failures(rows, limit=5):
 def main():
     ap = argparse.ArgumentParser(description="Evaluate retrieval configurations.")
     ap.add_argument("--queries", default=QUERIES_PATH)
-    ap.add_argument("--k", type=int, default=DEFAULT_K)
+    ap.add_argument("--k", type=int, nargs="+", default=[DEFAULT_K],
+                help="one or more rank cut-offs, e.g. --k 1 3 5 10")
+    ap.add_argument("--allow-degraded", action="store_true",
+                    help="permit dictionary-only fallback when the LLM is rate limited")
     ap.add_argument("--config", choices=list(CONFIGS) + ["all"], default="all")
     ap.add_argument("--per-query", action="store_true", help="print every query's scores")
     ap.add_argument("--save", help="write results to this JSON file")
     args = ap.parse_args()
 
+    # A 429 used to drop the parse configs to dictionary-only mid-run and
+    # still print a number, which understates exactly the configs being
+    # tested. Abort instead, unless the caller opts out.
+    if not args.allow_degraded:
+        os.environ["STRICT_QUERY_REWRITE"] = "1"
+
     queries = load_queries(args.queries)
     names = list(CONFIGS) if args.config == "all" else [args.config]
     print(f"{len(queries)} queries, k={args.k}, configs: {', '.join(names)}")
 
-    summaries, detail = [], {}
-    for name in names:
-        print(f"  running {name} ...", end="", flush=True)
-        summary, rows = run_config(name, queries, args.k)
-        summaries.append(summary)
-        detail[name] = rows
-        print(" done")
+    all_summaries, detail = {}, {}
+    for k in args.k:
+        summaries = []
+        for name in names:
+            print(f"  running {name} @k={k} ...", end="", flush=True)
+            summary, rows = run_config(name, queries, k)
+            summaries.append(summary)
+            detail[(name, k)] = rows
+            print(" done")
+        all_summaries[k] = summaries
+        print_table(summaries, k)
 
-    print_table(summaries, args.k)
-
-    best = max(summaries, key=lambda s: s["map_at_k"])
-    print(f"\nbest by MAP@{args.k}: {best['config']} ({best['map_at_k']:.3f})")
-    print_failures(detail[best["config"]])
+    largest = max(args.k)
+    best = max(all_summaries[largest], key=lambda s: s["map_at_k"])
+    print(f"\nbest by MAP@{largest}: {best['config']} ({best['map_at_k']:.3f})")
+    print_failures(detail[(best["config"], largest)])
+    summaries = [s for k in args.k for s in all_summaries[k]]
 
     if args.per_query:
         for name in names:
@@ -174,7 +187,9 @@ def main():
     if args.save:
         os.makedirs(os.path.dirname(args.save) or ".", exist_ok=True)
         with open(args.save, "w", encoding="utf-8") as fh:
-            json.dump({"summaries": summaries, "detail": detail}, fh, indent=2)
+            json.dump({"summaries": summaries,
+                       "detail": {f"{n}@{k}": v for (n, k), v in detail.items()}},
+                      fh, indent=2)
         print(f"\nsaved -> {args.save}")
 
     if len(queries) < 20:

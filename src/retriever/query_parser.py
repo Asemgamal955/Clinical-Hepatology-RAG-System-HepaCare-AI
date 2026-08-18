@@ -27,6 +27,7 @@ Usage:  python -m src.retriever.query_parser "your question"
 import json
 import os
 import re
+import time
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,6 +36,12 @@ from google.genai import types  # Import type
 from dotenv import load_dotenv
 
 from src.config import LLM_MODEL
+
+MAX_RETRIES = 4
+
+# Fail loudly instead of degrading to dictionary-only. Benchmarks set this so
+# a rate-limited run cannot be mistaken for a real measurement.
+STRICT = os.environ.get("STRICT_QUERY_REWRITE") == "1"
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
@@ -171,46 +178,100 @@ def _get_client():
     return _client
 
 
+def _retry_delay(exc, attempt):
+    """Seconds to wait. Google reports its own retryDelay on a 429; honour it."""
+    match = re.search(r"'retryDelay':\s*'(\d+)s'", str(exc))
+    if match:
+        return int(match.group(1)) + 1
+    return min(2 ** attempt, 60)
+
+
 def _llm_rewrite(query):
+    """
+    Ask the LLM for both query forms.
+
+    On the free tier Gemini allows 15 requests/minute and returns 429 beyond
+    that. Silently dropping to the dictionary was wrong for evaluation: the
+    parse-enabled configs got scored without the rewrite they exist to test,
+    so their numbers looked worse than the feature actually is. Rate limits
+    are now waited out rather than swallowed.
+
+    STRICT_QUERY_REWRITE=1 turns any remaining failure into an exception, so
+    a benchmark aborts instead of quietly reporting a degraded run.
+    """
     client = _get_client()
     if client is None:
+        if STRICT:
+            raise RuntimeError("GEMINI_API_KEY not set and STRICT_QUERY_REWRITE=1")
         return None
-    try:
-        response = client.models.generate_content(
-            model=LLM_MODEL,
-            contents=_PROMPT.format(query=query),
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json"
-            ),
-        )
-        data = json.loads(response.text)
-        dense = str(data.get("dense_query", "")).strip()
-        sparse = str(data.get("sparse_query", "")).strip()
-        if dense and sparse:
-            return dense, sparse
-    except Exception as exc:
-        # Print full exception details for quick debugging
-        print(f"  query rewrite unavailable ({type(exc).__name__}: {exc}), using dictionary only")
+
+    last = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            response = client.models.generate_content(
+                model=LLM_MODEL,
+                contents=_PROMPT.format(query=query),
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                ),
+            )
+            data = json.loads(response.text)
+            dense = str(data.get("dense_query", "")).strip()
+            sparse = str(data.get("sparse_query", "")).strip()
+            if dense and sparse:
+                return dense, sparse
+            last = ValueError("LLM returned empty dense_query/sparse_query")
+        except Exception as exc:
+            last = exc
+            if "RESOURCE_EXHAUSTED" in str(exc) or "429" in str(exc):
+                wait = _retry_delay(exc, attempt)
+                if attempt < MAX_RETRIES - 1:
+                    print(f"  rate limited, waiting {wait}s ({attempt + 1}/{MAX_RETRIES})")
+                    time.sleep(wait)
+                    continue
+            elif attempt < MAX_RETRIES - 1:
+                time.sleep(2 ** attempt)
+                continue
+        break
+
+    if STRICT:
+        raise RuntimeError(f"query rewrite failed after {MAX_RETRIES} attempts: {last}")
+    print(f"  query rewrite unavailable ({type(last).__name__}), using dictionary only")
     return None
+
+
+_cache = {}
 
 
 def parse_query(query, use_llm=True):
     """
     Build a ParsedQuery. Never raises and never returns empty fields - if every
     optional stage fails the caller still gets the original question back.
+
+    Results are memoised per process. The rewrite is deterministic for a given
+    question, and benchmarks sweep the same query set across several k values,
+    so without this a 35-query set costs 140 LLM calls instead of 35 - enough
+    to spend most of a run sitting out rate limits.
     """
     query = (query or "").strip()
     if not query:
         return ParsedQuery(raw=query, dense_query=query, sparse_query=query)
+
+    key = (query, use_llm)
+    if key in _cache:
+        return _cache[key]
 
     expanded, applied = expand_clinical_terms(query)
 
     rewritten = _llm_rewrite(expanded) if use_llm else None
     if rewritten:
         dense, sparse = rewritten
-        return ParsedQuery(query, dense, sparse, applied, used_llm=True)
+        parsed = ParsedQuery(query, dense, sparse, applied, used_llm=True)
+    else:
+        parsed = ParsedQuery(query, expanded, keywords_only(expanded), applied, used_llm=False)
 
-    return ParsedQuery(query, expanded, keywords_only(expanded), applied, used_llm=False)
+    _cache[key] = parsed
+    return parsed
 
 
 def main():
