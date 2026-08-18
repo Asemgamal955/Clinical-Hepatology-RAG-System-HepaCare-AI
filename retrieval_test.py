@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent))
 
 from src.retriever.retriever import retrieve
-from src.retriever.query_parser import parse_query
+from src.retriever.query_parser import expand_clinical_terms, keywords_only
 from src.evaluation.runner import load_qrels, run_evaluation, print_report
 
 
@@ -16,13 +16,12 @@ def run_test(query: str, top_k: int = 3):
     print(f"RAW USER QUERY: '{query}'")
     print("=" * 70)
 
-    # 1. Parse and display rewritten queries
-    parsed = parse_query(query)
-    print("[QUERY REWRITE BREAKDOWN]")
-    print(f"  Dense Query  : {parsed.dense_query}")
-    print(f"  Sparse Query : {parsed.sparse_query}")
-    print(f"  Expansions   : {parsed.expansions or 'None'}")
-    print(f"  LLM Rewritten: {parsed.used_llm}")
+    # Show clinical term expansions and keyword form
+    expanded, applied = expand_clinical_terms(query)
+    sparse_q = keywords_only(expanded)
+    print("[QUERY EXPANSION]")
+    print(f"  Expansions   : {applied or 'None'}")
+    print(f"  BM25 Keywords: {sparse_q}")
     print("-" * 70)
 
     # 2. Execute retrieval

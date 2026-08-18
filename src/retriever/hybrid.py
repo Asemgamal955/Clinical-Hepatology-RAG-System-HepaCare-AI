@@ -24,7 +24,7 @@ import sys
 from rank_bm25 import BM25Okapi
 
 from src.config import CHUNKS_PATH
-from src.retriever.query_parser import ParsedQuery, parse_query
+from src.retriever.query_parser import expand_clinical_terms, keywords_only
 from src.retriever.retriever import dense_search
 
 CANDIDATES = 50  # per leg, before fusion
@@ -111,7 +111,6 @@ def hybrid_search(
     dense_weight=DENSE_WEIGHT,
     sparse_weight=SPARSE_WEIGHT,
     rerank=False,
-    parse=True,
 ):
     """
     Run both legs and fuse by weighted reciprocal rank.
@@ -119,27 +118,23 @@ def hybrid_search(
     Returns up to `k` hits sorted by fused score, each annotated with whichever
     of `dense_rank` / `bm25_rank` it earned, so you can see which leg found it.
 
-    `query` may be a string or an already-built ParsedQuery. With `parse=True`
-    a string is run through the query parser first, so each leg receives the
-    form it wants; `parse=False` sends the raw string to both.
+    The dense leg receives the original query (with clinical term expansions
+    appended). The BM25 leg receives the same expanded text with stopwords
+    stripped — no LLM rewriting needed.
 
     With `rerank=True` the fused list is widened to RERANK_CANDIDATES and
-    handed to the cross-encoder, which picks the final k. Fusion then only has
-    to get the right chunk somewhere into the shortlist rather than at the top,
-    so the exact leg weights matter much less.
+    handed to the cross-encoder, which picks the final k.
     """
-    if isinstance(query, ParsedQuery):
-        parsed = query
-    elif parse:
-        parsed = parse_query(query)
-    else:
-        parsed = ParsedQuery(raw=query, dense_query=query, sparse_query=query)
+    # Expand clinical synonyms once; dense gets expanded prose, BM25 gets keywords.
+    expanded, _ = expand_clinical_terms(query if isinstance(query, str) else query)
+    dense_q = expanded
+    sparse_q = keywords_only(expanded)
 
     dense = dense_search(
-        parsed.dense_query, k=candidates, corpus=corpus, topic=topic, section=section
+        dense_q, k=candidates, corpus=corpus, topic=topic, section=section
     )
     sparse = sparse_search(
-        parsed.sparse_query, k=candidates, corpus=corpus, topic=topic, section=section
+        sparse_q, k=candidates, corpus=corpus, topic=topic, section=section
     )
 
     fused = {}
@@ -158,10 +153,7 @@ def hybrid_search(
     if rerank:
         from src.retriever.reranker import rerank as _rerank
 
-        # Reranked against the user's actual question, not the rewrite. The
-        # cross-encoder is the last stage that can correct a bad rewrite, so
-        # feeding it the rewrite would compound the error instead.
-        return _rerank(parsed.raw, ranked[:RERANK_CANDIDATES], top_n=k)
+        return _rerank(query if isinstance(query, str) else str(query), ranked[:RERANK_CANDIDATES], top_n=k)
     return ranked[:k]
 
 

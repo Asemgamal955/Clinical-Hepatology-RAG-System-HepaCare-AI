@@ -39,7 +39,7 @@ def retrieve(query, top_k: int = 5) -> list[dict]:
     """
     from src.retriever.hybrid import hybrid_search
 
-    return hybrid_search(query, k=top_k, rerank=True, parse=True)
+    return hybrid_search(query, k=top_k, rerank=True)
 
 
 def main():

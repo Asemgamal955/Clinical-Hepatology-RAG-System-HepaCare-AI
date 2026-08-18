@@ -2,7 +2,6 @@ import os
 from src.config import LLM_MODEL
 from src.generation.llm import Gemini
 from src.retriever import retrieve
-from src.retriever.query_parser import parse_query
 
 # Minimum Cohere rerank relevance for a supporting chunk to reach the model.
 #
@@ -23,21 +22,10 @@ def run_rag(query: str, top_k: int = 5, stream: bool = True):
     """Execute full RAG generation pipeline with query parsing and threshold filtering."""
     print(f"\n[Raw Query]: {query}")
 
-    # 1. Parse and expand query terms
-    parsed = parse_query(query)
-    print("\n[Query Parsing Breakdown]:")
-    print(f"  Dense Query  : {parsed.dense_query}")
-    print(f"  Sparse Query : {parsed.sparse_query}")
-    print(f"  Expansions   : {parsed.expansions or 'None'}")
-    print(f"  LLM Rewritten: {parsed.used_llm}\n")
-
-    # 2. Retrieve. Pass the ParsedQuery itself, not parsed.dense_query:
-    #    retrieve() parses internally, so handing it a rewritten string
-    #    would parse twice - two Gemini calls per question, and the BM25
-    #    leg would get keywords extracted from an already-rewritten
-    #    sentence instead of from what the user actually asked.
+    # 1. Retrieve using raw query (hybrid_search expands clinical terms
+    #    and strips stopwords for BM25 internally)
     print(f"Retrieving top {top_k} contexts...")
-    retrieved_chunks = retrieve(parsed, top_k=top_k)
+    retrieved_chunks = retrieve(query, top_k=top_k)
 
     # 3. Drop weakly-relevant chunks so the model is not invited to answer from
     #    near-misses. The threshold only applies to `rerank_score`, which is a

@@ -31,7 +31,6 @@ from ragas.metrics import (
 from src.config import CHUNKS_PATH, LLM_MODEL
 from src.generation.llm import Gemini
 from src.retriever import retrieve
-from src.retriever.query_parser import parse_query
 
 
 # ==============================================================================
@@ -67,8 +66,7 @@ def load_queries_jsonl(queries_path: str) -> list[dict]:
 
 def generate_rag_response(query: str, top_k: int = 5) -> tuple[str, list[dict]]:
     """Execute full RAG generation pipeline and return (answer, filtered_chunks)."""
-    parsed = parse_query(query)
-    retrieved_chunks = retrieve(parsed, top_k=top_k)
+    retrieved_chunks = retrieve(query, top_k=top_k)
 
     from src.generation.pipeline import ALWAYS_KEEP_TOP, RELEVANCE_THRESHOLD
 
