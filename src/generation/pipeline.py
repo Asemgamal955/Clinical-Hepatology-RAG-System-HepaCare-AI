@@ -47,14 +47,7 @@ def run_rag(query: str, top_k: int = 5, stream: bool = True):
     # Use original raw query in the user prompt so generation addresses the exact user question
     prompt = f"Context:\n{context_str}\n\nUser Question: {query}\n\nAnswer:"
 
-    # Lightning serves the same model without Google's 15 req/min free-tier
-    # cap, so it wins when its key is present.
-    if os.environ.get("LIGHTNING_API_KEY", "").startswith("sk-lit-"):
-        from src.generation.lightning_llm import LightningLLM
-        llm = LightningLLM()
-        llm.system_instruction = system_instruction
-    else:
-        llm = Gemini(model=LLM_MODEL, system_instruction=system_instruction)
+    llm = Gemini(model=LLM_MODEL, system_instruction=system_instruction)
 
     print("\n[Gemini Answer]:")
     if stream:
