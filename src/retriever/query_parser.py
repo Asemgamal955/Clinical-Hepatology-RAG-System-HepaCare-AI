@@ -167,14 +167,29 @@ def keywords_only(text):
 
 
 def _get_client():
+    """
+    Prefer Lightning, fall back to the Google API.
+
+    Google's free tier allows 15 requests/minute, which aborted benchmark runs
+    part-way through. Lightning serves the same model without that cap, so it
+    is used whenever LIGHTNING_API_KEY is present.
+
+    Returns (client, kind) where kind is "lightning" or "gemini".
+    """
     global _client
     if _client is None:
-        key = os.environ.get("GEMINI_API_KEY")
-        if not key or key == "your-key-here":
-            return None
-        from google import genai
+        lightning_key = os.environ.get("LIGHTNING_API_KEY")
+        if lightning_key and lightning_key != "your-key-here":
+            from src.generation.lightning_llm import LightningLLM
 
-        _client = genai.Client(api_key=key)
+            _client = (LightningLLM(api_key=lightning_key), "lightning")
+        else:
+            key = os.environ.get("GEMINI_API_KEY")
+            if not key or key == "your-key-here":
+                return None
+            from google import genai
+
+            _client = (genai.Client(api_key=key), "gemini")
     return _client
 
 
@@ -199,23 +214,28 @@ def _llm_rewrite(query):
     STRICT_QUERY_REWRITE=1 turns any remaining failure into an exception, so
     a benchmark aborts instead of quietly reporting a degraded run.
     """
-    client = _get_client()
-    if client is None:
+    resolved = _get_client()
+    if resolved is None:
         if STRICT:
-            raise RuntimeError("GEMINI_API_KEY not set and STRICT_QUERY_REWRITE=1")
+            raise RuntimeError("no LLM key set and STRICT_QUERY_REWRITE=1")
         return None
+    client, kind = resolved
 
     last = None
     for attempt in range(MAX_RETRIES):
         try:
-            response = client.models.generate_content(
-                model=LLM_MODEL,
-                contents=_PROMPT.format(query=query),
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                ),
-            )
-            data = json.loads(response.text)
+            if kind == "lightning":
+                raw = client.chat(_PROMPT.format(query=query),
+                                  temperature=0.0, json_mode=True)
+            else:
+                raw = client.models.generate_content(
+                    model=LLM_MODEL,
+                    contents=_PROMPT.format(query=query),
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json"
+                    ),
+                ).text
+            data = json.loads(raw)
             dense = str(data.get("dense_query", "")).strip()
             sparse = str(data.get("sparse_query", "")).strip()
             if dense and sparse:
