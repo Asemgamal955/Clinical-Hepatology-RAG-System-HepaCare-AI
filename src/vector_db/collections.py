@@ -78,10 +78,25 @@ def embed_texts(texts: list[str], input_type: str = "search_document") -> list[l
     return vectors
 
 
+_query_cache: dict[str, list[float]] = {}
+
+
 def embed_query(text: str) -> list[float]:
-    """Embed a single query string."""
+    """
+    Embed a single query string.
+
+    Memoised per process. Embedding is deterministic, and a benchmark runs the
+    same query set through five configs at several k values - 35 queries became
+    ~700 identical Cohere calls, which exhausted the trial rate limit and
+    aborted the run. Serving repeats from memory keeps the call count at one
+    per distinct query.
+    """
+    if text in _query_cache:
+        return _query_cache[text]
     client = _get_cohere()
-    return _embed_batch(client, [text], "search_query")[0]
+    vector = _embed_batch(client, [text], "search_query")[0]
+    _query_cache[text] = vector
+    return vector
 
 
 # ---------------------------------------------------------------------------
