@@ -25,7 +25,7 @@ def dense_search(query, k=5, corpus=None, topic=None, section=None):
     return hits
 
 
-def retrieve(query: str, top_k: int = 5) -> list[dict]:
+def retrieve(query, top_k: int = 5) -> list[dict]:
     """
     The entry point app.py and the generation pipeline call.
 
