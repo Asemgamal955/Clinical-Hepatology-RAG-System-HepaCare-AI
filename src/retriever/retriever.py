@@ -10,7 +10,7 @@ Usage:  python -m src.retriever.retriever "your question"
 
 import sys
 
-from src.vector_db.collections import search as _chroma_search, embed_query
+from src.vector_db.collections import search as _chroma_search
 
 
 def dense_search(query, k=5, corpus=None, topic=None, section=None):
