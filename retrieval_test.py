@@ -75,7 +75,17 @@ def interactive_menu(top_k: int = 5):
         if choice == "1":
             sample_queries = [
                 "what should i eat if my liver is fatty",
-                "What is liver hepatitis B?"
+                "What is liver hepatitis B?",
+                "When should screening for Hepatitis B virus infection be conducted in pregnant women according to the USPSTF?",
+                "What are the common risk factors for contracting Hepatitis B infection in adults in the United States?",
+                "What primary screening test is used to detect maternal Hepatitis B virus infection?",
+                "Which age group is recommended by the USPSTF for Hepatitis C virus screening?",
+                "What is the single most important risk factor for Hepatitis C virus infection in the United States?",
+                "What are the standard medications or interventions used to treat chronic Hepatitis C infection?",
+                "What underlying physical defect defines Alagille syndrome within the liver?",
+                "What primary genetic mutations are responsible for causing Alagille syndrome?",
+                "What physical signs and symptoms in the body might indicate a diagnosis of Alagille syndrome?",
+                "What dietary changes or nutritional plans are recommended for individuals with Alagille syndrome?"
             ]
             print("\nRunning retrieval tests on sample queries...")
             for query in sample_queries:
@@ -96,7 +106,6 @@ def interactive_menu(top_k: int = 5):
             break
         else:
             print("Invalid selection. Please choose between 1 and 4.")
-
 
 def main():
     parser = argparse.ArgumentParser(description="Test retrieval and run evaluation.")

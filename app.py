@@ -34,7 +34,7 @@ def main():
     parser = argparse.ArgumentParser(description="End-to-End RAG System with Gemini & Cohere")
     parser.add_argument("--index", action="store_true", help="Parse data and generate vector index")
     parser.add_argument("--query", type=str, help="Run RAG query against stored knowledge base")
-    parser.add_argument("--top-k", type=int, default=4, help="Number of chunks to retrieve (default: 4)")
+    parser.add_argument("--top-k", type=int, default=5, help="Number of chunks to retrieve (default: 4)")
 
     args = parser.parse_args()
 

@@ -44,8 +44,13 @@ def rerank(query, hits, top_n=5, client=None):
     `dense_rank` / `bm25_rank` so the retrieval path stays inspectable. `score`
     is overwritten with the rerank score, since that is now the ranking signal.
 
-    Returns hits unchanged if the API fails - a degraded ordering beats a dead
-    demo.
+    Raises on failure rather than returning the retrieval order. The two stages
+    put incompatible values in `score`: rerank is a 0-1 relevance, while RRF
+    sums weight/(60+rank) and tops out near 0.021. Silently handing back RRF
+    scores made every hit fall below the generation threshold, so the pipeline
+    answered "insufficient information" for questions it had retrieved
+    correctly. A loud failure is better than an answer that looks like a
+    knowledge gap.
     """
     if not hits:
         return []
@@ -64,8 +69,9 @@ def rerank(query, hits, top_n=5, client=None):
             break
         except Exception as exc:
             if attempt == MAX_RETRIES - 1:
-                print(f"  rerank failed ({type(exc).__name__}), keeping retrieval order")
-                return hits[:top_n]
+                raise RuntimeError(
+                    f"rerank failed after {MAX_RETRIES} attempts: {type(exc).__name__}: {exc}"
+                ) from exc
             time.sleep(2**attempt)
 
     ranked = []

@@ -40,7 +40,7 @@ SPARSE_WEIGHT = 0.25
 
 # How many fused candidates go to the reranker. More is better for recall but
 # costs latency and API quota; the reranker cuts this down to k.
-RERANK_CANDIDATES = 25
+RERANK_CANDIDATES = 50
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
