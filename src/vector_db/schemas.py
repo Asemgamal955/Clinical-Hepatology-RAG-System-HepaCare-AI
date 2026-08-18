@@ -7,7 +7,7 @@ time - the chunk text itself lives in Chroma's `documents`, not in metadata.
 """
 
 COLLECTION_NAME = "liver_rag"
-DIMENSION = 1024  # must match src.indexing.embeddings.DIMENSION
+DIMENSION = 1024  # must match src.config.EMBEDDING_DIMENSION
 
 # Fields promoted to filterable metadata.
 METADATA_FIELDS = ("corpus", "topic", "section", "heading", "url", "source")

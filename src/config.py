@@ -10,9 +10,6 @@ RAW_DIR = DATA_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 CHUNKS_PATH = PROCESSED_DIR / "chunks.jsonl"
 
-EMBEDDINGS_DIR = DATA_DIR / "embeddings"
-VECTORS_PATH = EMBEDDINGS_DIR / "vectors.npy"
-IDS_PATH = EMBEDDINGS_DIR / "ids.json"
 
 # Models
 EMBEDDING_MODEL = "embed-v4.0"
