@@ -14,3 +14,8 @@ ftfy>=6.0
 pymupdf4llm>=0.0.17
 langchain-cohere>=0.4
 langchain-experimental>=0.3
+
+# evaluation
+ragas>=0.4.3
+langchain-google-genai>=2.0.0
+
