@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>HepaCare AI - Precision Liver Health Monitoring</title>
+    <meta name="description" content="HepaCare AI - Clinical intelligence for precision liver care, continuous biomarker tracking, and personalized guidance." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#005f61',
+              'primary-container': '#007a7c',
+              'on-primary': '#ffffff',
+              'on-primary-container': '#b3feff',
+              surface: '#f9f9ff',
+              'surface-container-low': '#f0f3ff',
+              'surface-container-high': '#dee8ff',
+              'on-surface': '#111c2c',
+              'on-surface-variant': '#3e4949',
+              error: '#ba1a1a',
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(110, 121, 121, 0.25);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(110, 121, 121, 0.45);
+      }
+    </style>
+  </head>
+  <body class="bg-[#f9f9ff] text-[#111c2c] antialiased selection:bg-[#007a7c]/20 selection:text-[#005f61] overflow-hidden w-screen h-screen">
+    <div class="flex h-screen w-screen overflow-hidden bg-[#f9f9ff] text-[#111c2c] font-sans">
+      
+      <!-- Desktop Sidebar Navigation (Left) -->
+      <aside class="hidden md:flex flex-col w-64 bg-white border-r border-[#dee8ff] h-full fixed left-0 top-0 z-20 p-4 justify-between">
+        <div class="space-y-6">
+          <!-- Logo Header -->
+          <div class="flex items-center gap-3 px-2 py-3">
+            <div class="w-10 h-10 rounded-xl bg-[#005f61] flex items-center justify-center text-white shadow-md">
+              <span class="material-symbols-outlined text-[24px] fill">health_and_safety</span>
+            </div>
+            <div>
+              <h2 class="font-extrabold text-[18px] tracking-tight text-[#005f61]">HepaCare AI</h2>
+              <p class="text-[11px] text-[#3e4949] font-medium tracking-wide uppercase">Precision Hepatology</p>
+            </div>
+          </div>
+
+          <!-- Nav Menu Links -->
+          <nav class="space-y-1">
+            <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all text-[#3e4949] hover:bg-[#dee8ff]">
+              <span class="material-symbols-outlined text-[20px] fill">chat_bubble</span>
+              <span>Chat Assistant</span>
+            </button>
+            <button onclick="switchTab('showcase')" id="nav-showcase" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all text-[#3e4949] hover:bg-[#dee8ff]">
+              <span class="material-symbols-outlined text-[20px] fill">clinical_notes</span>
+              <span>Research Showcase</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="border-t border-[#dee8ff] pt-4 space-y-1">
+          <button onclick="openModal('settings')" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-[#3e4949] hover:bg-[#dee8ff]">
+            <span class="material-symbols-outlined text-[18px]">settings</span>
+            <span>Profile Settings</span>
+          </button>
+          <button onclick="openModal('help')" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-[#3e4949] hover:bg-[#dee8ff]">
+            <span class="material-symbols-outlined text-[18px]">help</span>
+            <span>Help Center</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Layout Body (Right) -->
+      <div class="flex-1 flex flex-col h-full overflow-hidden relative md:ml-64 pb-16 md:pb-0">
+        
+        <!-- Top App Header -->
+        <header class="bg-white border-b border-[#dee8ff] h-16 shrink-0 flex items-center justify-between px-4 md:px-8 z-10">
+          <div class="flex items-center gap-3">
+            <button onclick="toggleMobileDrawer(true)" class="md:hidden p-1.5 rounded-full hover:bg-[#dee8ff] text-[#3e4949] flex items-center">
+              <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="flex items-center gap-3">
+              <div class="relative w-9 h-9 flex items-center justify-center" id="patient-avatar-container">
+                <!-- User Avatar SVG -->
+                <svg id="patient-avatar" class="w-9 h-9 rounded-full border border-[#dee8ff]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="50" fill="#E2E8F0"/>
+                  <path d="M50 20C40 20 32 28 32 38C32 48 40 54 50 54C60 54 68 48 68 38C68 28 60 20 50 20Z" fill="#334155"/>
+                  <path d="M50 22C42 22 35 28 35 37C35 44 38 48 42 51C44 45 47 38 50 35C53 38 56 45 58 51C62 48 65 44 65 37C65 28 58 22 50 22Z" fill="#475569"/>
+                  <path d="M22 82C22 68 34 58 50 58C66 58 78 68 78 82V100H22V82Z" fill="#1E293B"/>
+                </svg>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
+              </div>
+              <div>
+                <h3 id="patient-name-display" class="font-bold text-[15px] text-[#111c2c]">Sarah Jenkins</h3>
+                <p id="patient-detail-display" class="text-[11px] text-[#3e4949] font-medium">Age 44 • Female • Mild Steatosis</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <!-- Telemetry Indicator -->
+            <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-[#f0f3ff] border border-[#d8e3fa] text-[12px] font-semibold text-[#005f61]">
+              <span id="telemetry-status-pill" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="telemetry-status-text">Stable</span>
+            </div>
+            <!-- Emergency Support button -->
+            <button onclick="openModal('emergency')" class="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 px-3.5 py-1.5 rounded-full text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-sm">
+              <span class="material-symbols-outlined text-[16px] text-red-600 fill">emergency</span>
+              <span>Emergency</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Screen Space -->
+        <main class="flex-1 overflow-hidden relative flex flex-col">
+          
+          <!-- Screen 1: Chat Assistant -->
+          <section id="screen-chat" class="hidden flex-1 flex flex-col overflow-hidden">
+            <!-- Messages Area -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- Typing Indicator (Spinner) -->
+            <div id="thinking-indicator" class="hidden px-4 md:px-8 py-2 flex items-center gap-3">
+              <div class="flex items-start gap-3 max-w-[80%]">
+                <div id="thinking-avatar" class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-slate-100 shadow-sm flex items-center justify-center">
+                  <!-- Assistant SVG avatar placeholder -->
+                </div>
+                <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-none border border-[#dee8ff] flex items-center gap-2 text-[14px] text-[#3e4949]">
+                  <svg class="animate-spin h-4 w-4 text-[#005f61]" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>HepaCare AI is analyzing evidence database...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="p-4 md:p-6 bg-white border-t border-[#dee8ff] shrink-0">
+              <form id="chat-form" onsubmit="event.preventDefault(); submitChat();" class="flex items-center gap-2.5 bg-[#f0f3ff] rounded-2xl p-2 border border-[#d8e3fa] shadow-2xs focus-within:ring-2 focus-within:ring-[#007a7c]/40 transition-all">
+                <input id="chat-input" type="text" placeholder="Ask about symptoms, ALT levels, low-sodium meals..." class="flex-1 bg-transparent px-2 py-1.5 text-[14px] text-[#111c2c] placeholder-[#6e7979] focus:outline-none" />
+                <button type="submit" class="bg-[#005f61] hover:bg-[#00696b] text-white p-2.5 rounded-xl flex items-center justify-center shadow-xs cursor-pointer shrink-0 transition-all active:scale-95">
+                  <span class="material-symbols-outlined text-[18px] fill">send</span>
+                </button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Screen 2: Research Showcase -->
+          <section id="screen-showcase" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-12">
+            <!-- Hero banner -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center max-w-7xl mx-auto pt-4">
+              <div class="space-y-5">
+                <div class="inline-flex items-center px-3 py-1 rounded-full bg-[#f0f3ff] text-[#005f61] text-[12px] font-bold border border-[#d8e3fa]">
+                  <span class="material-symbols-outlined text-[14px] mr-1.5 fill">verified</span>
+                  Clinically Validated RAG
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-[#111c2c] tracking-tight leading-tight">
+                  Precision Liver Care,<br /><span class="text-[#005f61]">Powered by AI.</span>
+                </h1>
+                <p class="text-[15px] text-[#3e4949] max-w-xl leading-relaxed">
+                  HepaCare AI provides continuous, evidence-based monitoring and personalized guidance for liver health, designed to bridge the gap between patient and provider.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                  <button onclick="switchTab('chat')" class="bg-[#005f61] text-white hover:bg-[#00696b] font-bold text-[14px] px-5 py-3 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-98">
+                    <span>Start Chatting</span>
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  </button>
+                  <button onclick="showStudyDetails(sampleStudy)" class="border border-[#dee8ff] bg-white text-[#111c2c] hover:bg-slate-50 font-bold text-[14px] px-5 py-3 rounded-xl transition-all flex items-center gap-2 cursor-pointer">
+                    <span>View Clinical Data</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Liver Mock Card -->
+              <div class="relative aspect-square max-w-[420px] mx-auto w-full bg-[#f0f3ff] rounded-3xl border border-[#d8e3fa] overflow-hidden shadow-md flex items-center justify-center group">
+                <!-- SVG replacing hero_liver.jpg -->
+                <div class="absolute inset-0 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center" id="hero-liver-bg">
+                  <svg viewBox="0 0 500 500" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="500" height="500" fill="#D2E0EB"/>
+                    <!-- Liver Shape -->
+                    <path d="M120 220C120 160 210 130 310 160C410 190 440 280 430 330C415 390 320 400 220 380C150 365 120 290 120 220Z" fill="#B2635B"/>
+                    <path d="M250 160C330 170 410 240 400 320C390 370 310 375 240 360C250 280 250 200 250 160Z" fill="#994D46"/>
+                    <!-- Vessels & Neural Nodes -->
+                    <path d="M250 140V390" stroke="#007A7C" stroke-width="14" stroke-linecap="round"/>
+                    <path d="M265 140V280" stroke="#C8524B" stroke-width="12" stroke-linecap="round"/>
+                    <path d="M250 220L180 180M250 250L160 270M250 290L190 330M250 230L340 200M250 270L360 280M250 310L330 340" stroke="#00B4B6" stroke-width="5" stroke-linecap="round"/>
+                    <!-- Nodes / Sparks -->
+                    <circle cx="180" cy="180" r="6" fill="#80FFFF"/>
+                    <circle cx="160" cy="270" r="6" fill="#80FFFF"/>
+                    <circle cx="190" cy="330" r="6" fill="#80FFFF"/>
+                    <circle cx="340" cy="200" r="6" fill="#80FFFF"/>
+                    <circle cx="360" cy="280" r="6" fill="#80FFFF"/>
+                    <circle cx="330" cy="340" r="6" fill="#80FFFF"/>
+                    <circle cx="250" cy="250" r="8" fill="#80FFFF"/>
+                  </svg>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none"></div>
+                <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-white/60 shadow-md flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-[#007a7c] text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[18px] fill">health_and_safety</span>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-bold text-[#111c2c]">Analysis Status</p>
+                    <p class="text-[10px] font-extrabold text-[#005f61]">Optimal</p>
+                  </div>
+                </div>
+                <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-white/60 shadow-sm flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#005f61] animate-ping"></span>
+                  <span class="text-[10px] font-bold text-[#111c2c]">Biochemical Telemetry Active</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bento Grid Section -->
+            <div class="max-w-7xl mx-auto space-y-6 pt-4">
+              <h2 class="text-xl md:text-2xl font-bold text-center text-[#111c2c]">Intelligent Monitoring Architecture</h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Bento Block 1: Biomarker Tabs -->
+                <div class="md:col-span-2 bg-white rounded-3xl p-6 border border-[#dee8ff] shadow-sm flex flex-col justify-between min-h-[300px] relative overflow-hidden group">
+                  <div class="absolute -right-8 -top-8 w-32 h-32 bg-[#e7eeff] rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
+                  <div class="relative z-10 flex flex-col h-full justify-between gap-4">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 rounded-xl bg-[#007a7c] text-white flex items-center justify-center shadow-xs">
+                        <span class="material-symbols-outlined fill text-[20px]">analytics</span>
+                      </div>
+                      <div class="flex bg-[#f0f3ff] p-1 rounded-xl border border-[#dee8ff]/80 text-[11px] font-semibold gap-1">
+                        <button onclick="switchBentoTab('alt')" id="bento-tab-alt" class="px-3 py-1 rounded-lg transition-all bg-white text-[#005f61] shadow-2xs font-bold">ALT</button>
+                        <button onclick="switchBentoTab('ast')" id="bento-tab-ast" class="px-3 py-1 rounded-lg transition-all text-[#3e4949]">AST</button>
+                        <button onclick="switchBentoTab('bili')" id="bento-tab-bili" class="px-3 py-1 rounded-lg transition-all text-[#3e4949]">Bilirubin</button>
+                      </div>
+                    </div>
+
+                    <div id="bento-content-area" class="space-y-2">
+                      <!-- Content dynamically loaded via JS -->
+                    </div>
+
+                    <p class="text-[12px] text-[#3e4949] font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#005f61]"></span>
+                      Reflects real-time enzyme synthesis database.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Bento Block 2: Jargon Translator -->
+                <div class="bg-white rounded-3xl p-6 border border-[#dee8ff] shadow-sm flex flex-col justify-between min-h-[300px] relative overflow-hidden group">
+                  <div class="absolute -right-8 -top-8 w-32 h-32 bg-[#fdaa8c]/20 rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
+                  <div class="relative z-10 flex flex-col h-full justify-between gap-4">
+                    <div class="flex items-center justify-between">
+                      <div class="w-10 h-10 rounded-xl bg-orange-100 text-[#8d4d35] flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[20px] fill">translate</span>
+                      </div>
+                      <div class="flex bg-[#f0f3ff] p-1 rounded-xl border border-[#dee8ff]/80 text-[10px] font-bold gap-1">
+                        <button onclick="switchJargonTab('jargon')" id="jargon-tab-jargon" class="px-2.5 py-1 rounded-lg transition-all text-[#3e4949]">Jargon</button>
+                        <button onclick="switchJargonTab('empathy')" id="jargon-tab-empathy" class="px-2.5 py-1 rounded-lg transition-all bg-white text-[#005f61] shadow-2xs font-bold">Patient Care</button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 class="text-[13px] font-bold text-[#3e4949] uppercase tracking-wide mb-1" id="jargon-title">Evaluation Terminology</h4>
+                      <p class="text-[14px] text-[#111c2c] leading-relaxed" id="jargon-content">"Your liver cells are undergoing very mild, temporary stress. ALT is slightly higher than normal, but AST is normal. This is like a small skin scrape that recovers easily."</p>
+                    </div>
+
+                    <p class="text-[11px] text-[#8d4d35] font-bold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">psychology</span>
+                      <span>Bridges patient-provider gaps.</span>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Bento Block 3: EHR Integration (Span 2) -->
+                <div class="md:col-span-2 bg-[#dee8ff]/40 rounded-3xl p-6 border border-[#dee8ff] flex flex-col md:flex-row justify-between items-center gap-6 group">
+                  <div class="space-y-3 flex-1">
+                    <div class="w-10 h-10 rounded-xl bg-[#005f61]/10 text-[#005f61] flex items-center justify-center">
+                      <span class="material-symbols-outlined text-[20px]">dataset</span>
+                    </div>
+                    <h3 class="text-[17px] font-bold text-[#111c2c]">One-Click EHR Integration</h3>
+                    <p class="text-[13px] text-[#3e4949] leading-relaxed max-w-md">
+                      Export patients telemetry summaries directly as structured FHIR-compliant markdown notes to insert into your clinic's electronic health record.
+                    </p>
+                  </div>
+                  <button onclick="copyMockEHR()" id="btn-copy-ehr" class="bg-white border border-[#005f61]/20 text-[#005f61] hover:bg-slate-50 font-bold text-[13px] px-5 py-3.5 rounded-xl shrink-0 transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                    <span id="ehr-btn-text">Copy EHR Summary</span>
+                  </button>
+                </div>
+
+                <!-- Bento Block 4: Evidence Database -->
+                <div class="bg-white rounded-3xl p-6 border border-[#dee8ff] shadow-sm flex flex-col justify-between min-h-[180px] relative overflow-hidden group">
+                  <div class="relative z-10 flex flex-col h-full justify-between gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#005f61]/10 text-[#005f61] flex items-center justify-center">
+                      <span class="material-symbols-outlined text-[20px] fill">menu_book</span>
+                    </div>
+                    <div>
+                      <h4 class="text-[15px] font-bold text-[#111c2c]">PubMed Reference Database</h4>
+                      <p class="text-[12px] text-[#3e4949] leading-relaxed mt-1">
+                        Cross-referenced against verified clinical studies and hepatology consensus panels.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+
+        </main>
+
+        <!-- Mobile Bottom Navigation Bar (Bottom) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-[#dee8ff] z-20 flex items-center justify-around px-4">
+          <button onclick="switchTab('chat')" id="mobile-nav-chat" class="flex flex-col items-center justify-center text-[#3e4949] transition-all py-1">
+            <span class="material-symbols-outlined text-[22px] fill">chat_bubble</span>
+            <span class="text-[10px] font-bold mt-0.5">Chat</span>
+          </button>
+          <button onclick="switchTab('showcase')" id="mobile-nav-showcase" class="flex flex-col items-center justify-center text-[#3e4949] transition-all py-1">
+            <span class="material-symbols-outlined text-[22px] fill">clinical_notes</span>
+            <span class="text-[10px] font-bold mt-0.5">Showcase</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MOBILE NAVIGATION SIDEBAR DRAWER (Slide-out) -->
+    <div id="mobile-drawer" class="fixed inset-0 z-50 hidden flex">
+      <div onclick="toggleMobileDrawer(false)" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+      <div class="relative w-72 bg-white h-full shadow-2xl z-10 flex flex-col p-4 justify-between animate-in slide-in-from-left duration-200">
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-[#dee8ff]">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-[#005f61] flex items-center justify-center text-white">
+                <span class="material-symbols-outlined text-[18px] fill">health_and_safety</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-[14px] text-[#005f61]">HepaCare AI</h3>
+                <p class="text-[10px] text-[#3e4949] font-semibold uppercase">Patient Portal</p>
+              </div>
+            </div>
+            <button onclick="toggleMobileDrawer(false)" class="p-1 rounded-full hover:bg-slate-100 text-[#3e4949]">
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+
+          <div class="space-y-1">
+            <button onclick="toggleMobileDrawer(false); switchTab('chat');" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] text-[#3e4949] hover:bg-[#dee8ff]">
+              <span class="material-symbols-outlined text-[20px] fill">chat_bubble</span>
+              <span>Chat Assistant</span>
+            </button>
+            <button onclick="toggleMobileDrawer(false); switchTab('showcase');" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] text-[#3e4949] hover:bg-[#dee8ff]">
+              <span class="material-symbols-outlined text-[20px] fill">clinical_notes</span>
+              <span>Research Showcase</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-[#dee8ff] space-y-1">
+          <button onclick="toggleMobileDrawer(false); openModal('settings');" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-[#3e4949] hover:bg-[#dee8ff]">
+            <span class="material-symbols-outlined text-[18px]">settings</span>
+            <span>Settings</span>
+          </button>
+          <button onclick="toggleMobileDrawer(false); openModal('help');" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-[#3e4949] hover:bg-[#dee8ff]">
+            <span class="material-symbols-outlined text-[18px]">help</span>
+            <span>Help Center</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!--                  MODALS CONTAINER              -->
+    <!-- ============================================== -->
+
+
+    <!-- Modal 2: Emergency Modal -->
+    <div id="modal-emergency" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div onclick="closeModal('emergency')" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+      <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl z-10 flex flex-col overflow-hidden">
+        <div class="px-6 py-5 bg-red-50 border-b border-red-100 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-red-700">
+            <span class="material-symbols-outlined fill text-[22px]">emergency</span>
+            <h3 class="text-[17px] font-bold">Emergency Medical Alert</h3>
+          </div>
+          <button onclick="closeModal('emergency')" class="p-1 rounded-full hover:bg-red-100 text-red-700">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <p class="text-[14px] text-[#111c2c] leading-relaxed font-bold">
+            If you are experiencing severe liver-related complications, please seek immediate emergency care:
+          </p>
+          <ul class="space-y-2.5 text-[13px] text-[#3e4949] list-disc pl-5">
+            <li><strong>Severe or acute confusion / disorientation</strong> (Hepatic Encephalopathy)</li>
+            <li><strong>Sudden severe abdominal pain or swelling</strong></li>
+            <li><strong>Vomiting blood</strong> or passing dark, tarry stools</li>
+            <li><strong>Rapid worsening of jaundice</strong> (yellowing of eyes/skin)</li>
+          </ul>
+          <div class="bg-red-50 p-4 rounded-2xl border border-red-100 text-[13px] text-red-800 space-y-1.5">
+            <p class="font-bold flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] fill">phone</span>Emergency Hotline: 911</p>
+            <p class="font-medium text-[12px]">Please notify your licensed medical practitioner immediately regarding these symptoms.</p>
+          </div>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 border-t border-[#dee8ff] flex justify-end shrink-0">
+          <button onclick="closeModal('emergency')" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-sm cursor-pointer">Acknowledge</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: Settings Modal -->
+    <div id="modal-settings" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div onclick="closeModal('settings')" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+      <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl z-10 flex flex-col overflow-hidden">
+        <div class="px-6 py-5 border-b border-[#dee8ff] flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#005f61] text-[22px]">settings</span>
+            <h3 class="text-[17px] font-bold text-[#111c2c]">Patient Profile Settings</h3>
+          </div>
+          <button onclick="closeModal('settings')" class="p-1 rounded-full hover:bg-slate-100 text-[#3e4949]">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="space-y-1.5">
+            <label class="text-[12px] font-bold text-[#3e4949] uppercase">Patient Name</label>
+            <input type="text" id="settings-name" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Age</label>
+              <input type="number" id="settings-age" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Gender</label>
+              <input type="text" id="settings-gender" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-[12px] font-bold text-[#3e4949] uppercase">Condition</label>
+            <input type="text" id="settings-condition" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+          </div>
+        </div>
+        <div class="px-6 py-4 bg-[#f9f9ff] border-t border-[#dee8ff] flex justify-end gap-3 shrink-0">
+          <button onclick="closeModal('settings')" class="px-4 py-2.5 rounded-xl border border-[#dee8ff] text-[13px] font-bold text-[#3e4949] hover:bg-slate-50 cursor-pointer">Cancel</button>
+          <button onclick="saveSettings()" class="bg-[#005f61] hover:bg-[#00696b] text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-sm cursor-pointer">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Help Center Modal -->
+    <div id="modal-help" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div onclick="closeModal('help')" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+      <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl z-10 flex flex-col overflow-hidden">
+        <div class="px-6 py-5 border-b border-[#dee8ff] flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#005f61] text-[22px]">help</span>
+            <h3 class="text-[17px] font-bold text-[#111c2c]">Help & Support</h3>
+          </div>
+          <button onclick="closeModal('help')" class="p-1 rounded-full hover:bg-slate-100 text-[#3e4949]">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+        <div class="p-6 space-y-3.5 text-[13px] text-[#3e4949] leading-relaxed overflow-y-auto max-h-[60vh]">
+          <h4 class="font-bold text-[#111c2c] text-[14px]">How do I monitor my metrics?</h4>
+          <p>Use the <strong>Log Action</strong> button in the chat to track your ALT, AST, Bilirubin, and Albumin levels. The AI will analyze your logs and give you personalized guidance.</p>
+          <h4 class="font-bold text-[#111c2c] text-[14px] pt-2">How does the chatbot answer questions?</h4>
+          <p>HepaCare AI is powered by clinical Retrieval-Augmented Generation (RAG). Every answer it gives is verified against trusted medical publications in the database, with active source citations.</p>
+          <h4 class="font-bold text-[#111c2c] text-[14px] pt-2">Need to contact clinic staff?</h4>
+          <p>For scheduling, refills, or administrative queries, contact the patient help desk at <strong>(555) 019-9238</strong>.</p>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 border-t border-[#dee8ff] flex justify-end shrink-0">
+          <button onclick="closeModal('help')" class="bg-[#005f61] hover:bg-[#00696b] text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-sm cursor-pointer">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 5: Clinical Study Details Modal -->
+    <div id="modal-study" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div onclick="closeModal('study')" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+      <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl z-10 flex flex-col overflow-hidden">
+        <div class="px-6 py-5 border-b border-[#dee8ff] flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#005f61] text-[22px] fill">menu_book</span>
+            <h3 class="text-[16px] font-bold text-[#111c2c]" id="study-modal-journal">Lancet Digital Health & Gastroenterology</h3>
+          </div>
+          <button onclick="closeModal('study')" class="p-1 rounded-full hover:bg-slate-100 text-[#3e4949]">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+        <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
+          <h4 class="text-[17px] font-extrabold text-[#111c2c]" id="study-modal-title">Clinical Study Title</h4>
+          <div class="text-[12px] text-[#3e4949] font-medium space-y-1">
+            <p><strong>Authors:</strong> <span id="study-modal-authors">Clinical Consortium</span></p>
+            <p><strong>Database Source:</strong> PubMed Central Index</p>
+          </div>
+          <div class="border-t border-[#dee8ff] pt-3">
+            <h5 class="text-[12px] font-bold text-[#3e4949] uppercase tracking-wider mb-1.5">Abstract Excerpt</h5>
+            <p class="text-[13.5px] text-[#111c2c] leading-relaxed" id="study-modal-abstract">Study details go here.</p>
+          </div>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 border-t border-[#dee8ff] flex justify-end shrink-0">
+          <button onclick="closeModal('study')" class="bg-[#005f61] hover:bg-[#00696b] text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-sm cursor-pointer">Done Reading</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 6: Log Actions Modal (meal, symptom, lab) -->
+    <div id="modal-log-actions" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+      <div onclick="closeModal('log-actions')" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"></div>
+      <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl z-10 flex flex-col overflow-hidden">
+        <!-- Header tabs -->
+        <div class="border-b border-[#dee8ff] flex text-[13px] font-bold text-[#3e4949] select-none">
+          <button onclick="switchLogTab('meal')" id="log-tab-meal" class="flex-1 py-4 border-b-2 border-transparent text-center hover:bg-slate-50">Log Meal</button>
+          <button onclick="switchLogTab('symptom')" id="log-tab-symptom" class="flex-1 py-4 border-b-2 border-transparent text-center hover:bg-slate-50">Log Symptom</button>
+          <button onclick="switchLogTab('lab')" id="log-tab-lab" class="flex-1 py-4 border-b-2 border-transparent text-center hover:bg-slate-50">Log Lab Panel</button>
+        </div>
+
+        <!-- Scrollable Forms -->
+        <div class="p-6 flex-1 overflow-y-auto max-h-[60vh] space-y-4">
+          <!-- Meal form -->
+          <div id="log-form-meal" class="space-y-4">
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Describe your meal</label>
+              <input type="text" id="meal-desc" placeholder="e.g. Baked salmon with broccoli and brown rice" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Estimated Sodium Adherence</label>
+              <select id="meal-sodium" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none">
+                <option value="low">Low Sodium (&lt; 500mg) - Excellent</option>
+                <option value="moderate">Moderate Sodium (500 - 1500mg) - Reassuring</option>
+                <option value="high">High Sodium (&gt; 1500mg) - Warning</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Symptom form -->
+          <div id="log-form-symptom" class="space-y-4 hidden">
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Select Symptom Type</label>
+              <select id="symptom-name" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none">
+                <option value="Fatigue">Fatigue (Tiredness)</option>
+                <option value="Pruritus">Pruritus (Itching skin)</option>
+                <option value="Brain Fog">Encephalopathy / Brain Fog</option>
+                <option value="Ascites">Abdominal Swelling / Ascites</option>
+                <option value="Jaundice">Jaundice (yellow eyes/skin)</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Severity level (1 - 10)</label>
+              <input type="number" min="1" max="10" value="3" id="symptom-severity" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[12px] font-bold text-[#3e4949] uppercase">Symptom notes</label>
+              <textarea id="symptom-notes" placeholder="Any details..." class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2 text-[14px] text-[#111c2c] focus:outline-none h-16"></textarea>
+            </div>
+          </div>
+
+          <!-- Lab form -->
+          <div id="log-form-lab" class="space-y-4 hidden">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-[12px] font-bold text-[#3e4949] uppercase">ALT Level (U/L)</label>
+                <input type="number" id="lab-alt" value="45" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[12px] font-bold text-[#3e4949] uppercase">AST Level (U/L)</label>
+                <input type="number" id="lab-ast" value="32" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-[12px] font-bold text-[#3e4949] uppercase">Total Bilirubin (mg/dL)</label>
+                <input type="number" step="0.1" id="lab-bili" value="0.9" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[12px] font-bold text-[#3e4949] uppercase">Albumin (g/dL)</label>
+                <input type="number" step="0.1" id="lab-albumin" value="4.2" class="w-full bg-[#f0f3ff] border border-[#d8e3fa] rounded-xl px-4 py-2.5 text-[14px] text-[#111c2c] focus:outline-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 bg-[#f9f9ff] border-t border-[#dee8ff] flex justify-end gap-3 shrink-0">
+          <button onclick="closeModal('log-actions')" class="px-4 py-2.5 rounded-xl border border-[#dee8ff] text-[13px] font-bold text-[#3e4949] hover:bg-slate-50 cursor-pointer">Cancel</button>
+          <button onclick="submitLogForm()" class="bg-[#005f61] hover:bg-[#00696b] text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-sm cursor-pointer transition-all active:scale-95">Record Update</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!--            JAVASCRIPT STATE & BINDING          -->
+    <!-- ============================================== -->
+    <script>
+      // SVG Strings defining the image replacements
+      const SVG_STRINGS = {
+        assistant: `<svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="#EBF3FA"/><rect x="25" y="25" width="50" height="50" rx="20" fill="#6B93C0"/><circle cx="38" cy="45" r="5" fill="#1E293B"/><circle cx="62" cy="45" r="5" fill="#1E293B"/><path d="M42 58C42 58 46 62 50 62C54 62 58 58 58 58" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/><path d="M20 50C20 35 30 20 50 20C70 20 80 35 80 50" stroke="#4B77A9" stroke-width="6" fill="none"/><circle cx="20" cy="50" r="6" fill="#00A8B5"/><circle cx="80" cy="50" r="6" fill="#00A8B5"/><path d="M50 20V12" stroke="#4B77A9" stroke-width="4"/><path d="M38 12H62V24H38V12Z" fill="#00A8B5" rx="4"/><path d="M44 18H56V18" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M50 12V24" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>`,
+        user: `<svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="#E2E8F0"/><path d="M50 20C40 20 32 28 32 38C32 48 40 54 50 54C60 54 68 48 68 38C68 28 60 20 50 20Z" fill="#334155"/><path d="M50 22C42 22 35 28 35 37C35 44 38 48 42 51C44 45 47 38 50 35C53 38 56 45 58 51C62 48 65 44 65 37C65 28 58 22 50 22Z" fill="#475569"/><path d="M22 82C22 68 34 58 50 58C66 58 78 68 78 82V100H22V82Z" fill="#1E293B"/></svg>`,
+        researchDoctor: `<svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="#E0F2FE"/><path d="M50 20C42 20 35 27 35 36C35 45 42 52 50 52C58 52 65 45 65 36C65 27 58 20 50 20Z" fill="#D97706"/><path d="M20 90C20 72 32 60 50 60C68 60 80 72 80 90V100H20V90Z" fill="#FFFFFF"/><path d="M38 60L50 78L62 60" fill="#0F172A"/><path d="M42 60L50 72L58 60" fill="#1E40AF"/><path d="M30 70C30 70 34 85 50 85C66 85 70 70 70 70" stroke="#0284C7" stroke-width="3" fill="none"/><circle cx="30" cy="70" r="4" fill="#64748B"/><circle cx="70" cy="70" r="4" fill="#64748B"/></svg>`
+      };
+
+      const sampleStudy = {
+        title: "AI-Augmented Clinical Decision Support for Early Hepatic Steatosis Detection",
+        journal: "Lancet Digital Health & Gastroenterology, 2024",
+        url: "#",
+        authors: "Dr. Elena Vance, MD; Dr. Marcus Chen, PhD; HepaCare Clinical Consortium",
+        abstract: "In a multi-center randomized cohort of 14,200 patients presenting with borderline liver transaminase elevation, longitudinal AI modeling achieved a 98.2% diagnostic concordance with senior hepatology board consensus, reducing time-to-lifestyle-intervention by 62%."
+      };
+
+      let patient = {
+        name: "Sarah Jenkins",
+        age: 44,
+        gender: "Female",
+        condition: "Mild Non-Alcoholic Hepatic Steatosis (Grade 1)",
+        status: "Stable",
+        statusDetail: "Improving",
+        lastUpdated: "Today, 09:45 AM",
+        notes: "Patient reported mild fatigue over the weekend. Diet has been consistent with prescribed low-sodium plan. Advised to continue monitoring ALT levels and hydrate."
+      };
+
+      let markers = [
+        { id: "alt", name: "ALT Level", shortName: "ALT", fullName: "Alanine Transaminase", value: 45, unit: "U/L", status: "Slightly Elevated", normalRange: "< 35 U/L", description: "Key enzyme released into blood when hepatocytes (liver cells) experience stress or inflammation.", history: [38, 41, 48, 45] },
+        { id: "ast", name: "AST Level", shortName: "AST", fullName: "Aspartate Transaminase", value: 32, unit: "U/L", status: "Normal", normalRange: "10 - 40 U/L", description: "Enzyme present in liver and muscle tissue. AST/ALT ratio is within reassuring parameters (< 1.0).", history: [30, 34, 33, 32] },
+        { id: "bilirubin", name: "Total Bilirubin", shortName: "Bilirubin", fullName: "Total Serum Bilirubin", value: 0.9, unit: "mg/dL", status: "Normal", normalRange: "0.2 - 1.2 mg/dL", description: "Byproduct of normal red blood cell breakdown, processed efficiently by the liver without biliary obstruction.", history: [0.8, 1.0, 0.9, 0.9] },
+        { id: "albumin", name: "Serum Albumin", shortName: "Albumin", fullName: "Albumin Synthesis Marker", value: 4.2, unit: "g/dL", status: "Normal", normalRange: "3.5 - 5.0 g/dL", description: "Primary protein synthesized by healthy liver tissue, indicating robust protein synthesis capacity.", history: [4.0, 4.1, 4.2, 4.2] }
+      ];
+
+      let messages = [];
+
+      let heatmapData = [
+        { symptom: "Fatigue", week: "Week 1", intensity: 80, cases: 342, notes: "Post-weekend spike associated with sleep variance" },
+        { symptom: "Fatigue", week: "Week 2", intensity: 90, cases: 388, notes: "Reported during dietary transition" },
+        { symptom: "Fatigue", week: "Week 3", intensity: 100, cases: 412, notes: "Highest cluster correlation with ALT fluctuations" },
+        { symptom: "Fatigue", week: "Week 4", intensity: 70, cases: 295, notes: "Stabilized following hydration adjustments" },
+
+        { symptom: "Jaundice", week: "Week 1", intensity: 40, cases: 18, notes: "Mild scleral icterus query" },
+        { symptom: "Jaundice", week: "Week 2", intensity: 50, cases: 22, notes: "Bilirubin monitored under 1.2 mg/dL" },
+        { symptom: "Jaundice", week: "Week 3", intensity: 30, cases: 14, notes: "No progression detected" },
+        { symptom: "Jaundice", week: "Week 4", intensity: 60, cases: 27, notes: "Follow-up photo check reviewed" },
+
+        { symptom: "Ascites", week: "Week 1", intensity: 20, cases: 6, notes: "Mild bloating inquiries" },
+        { symptom: "Ascites", week: "Week 2", intensity: 10, cases: 3, notes: "Sodium reduction adherence logged" },
+        { symptom: "Ascites", week: "Week 3", intensity: 5, cases: 1, notes: "No ascites ultrasound evidence" },
+        { symptom: "Ascites", week: "Week 4", intensity: 20, cases: 7, notes: "Low abdominal girth variance" },
+
+        { symptom: "Brain Fog", week: "Week 1", intensity: 5, cases: 0, notes: "Cognitive screen 100% normal" },
+        { symptom: "Brain Fog", week: "Week 2", intensity: 5, cases: 0, notes: "Sleep cycle normal" },
+        { symptom: "Brain Fog", week: "Week 3", intensity: 10, cases: 1, notes: "Mild brain fog attributed to lack of sleep" },
+        { symptom: "Brain Fog", week: "Week 4", intensity: 5, cases: 0, notes: "No asterixis reported" },
+
+        { symptom: "Pruritus", week: "Week 1", intensity: 30, cases: 42, notes: "Occasional nocturnal skin dryness" },
+        { symptom: "Pruritus", week: "Week 2", intensity: 40, cases: 58, notes: "Topical moisturizers recommended" },
+        { symptom: "Pruritus", week: "Week 3", intensity: 20, cases: 29, notes: "Bile acid panel ordered" },
+        { symptom: "Pruritus", week: "Week 4", intensity: 30, cases: 39, notes: "Transient post-bath itch" }
+      ];
+
+      // Jargon Database for Showcase Jargon Switcher
+      const jargonContent = {
+        jargon: "Mild metabolic dysfunction-associated steatotic liver disease (MASLD) characterized by borderline hepatocellular enzyme leakage. AST and bilirubin markers show zero current evidence of cytolytic progression, obstruction, or active architectural injury.",
+        empathy: "Your liver cells are undergoing very mild, temporary stress. ALT is slightly higher than normal, but AST is normal. This is like a small skin scrape that recovers easily with hydration and healthy meals."
+      };
+
+      // 2. Tab Navigation logic
+      let currentTab = 'showcase';
+      function switchTab(tabId) {
+        currentTab = tabId;
+
+        // Hide all screens
+        document.getElementById('screen-chat').classList.add('hidden');
+        document.getElementById('screen-showcase').classList.add('hidden');
+
+        // Show target screen
+        document.getElementById(`screen-${tabId}`).classList.remove('hidden');
+
+        // Reset sidebar button highlights
+        ['chat', 'showcase'].forEach(t => {
+          const btn = document.getElementById(`nav-${t}`);
+          const mobBtn = document.getElementById(`mobile-nav-${t}`);
+          if (btn) {
+            if (t === tabId) {
+              btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-extrabold transition-all bg-[#007a7c] text-[#b3feff]";
+            } else {
+              btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all text-[#3e4949] hover:bg-[#dee8ff]";
+            }
+          }
+          if (mobBtn) {
+            if (t === tabId) {
+              mobBtn.className = "flex flex-col items-center justify-center text-[#005f61] transition-all py-1 scale-105 font-bold";
+            } else {
+              mobBtn.className = "flex flex-col items-center justify-center text-[#3e4949] transition-all py-1 opacity-70 font-semibold";
+            }
+          }
+        });
+      }
+
+      // 3. UI Sync helpers
+      function syncPatientHeader() {
+        document.getElementById('thinking-avatar').innerHTML = SVG_STRINGS.assistant;
+        document.getElementById('patient-name-display').innerText = patient.name;
+        document.getElementById('patient-detail-display').innerText = `Age ${patient.age} • ${patient.gender} • ${patient.condition.split(' ')[0]} Steatosis`;
+        
+        const pill = document.getElementById('telemetry-status-pill');
+        const text = document.getElementById('telemetry-status-text');
+        text.innerText = patient.status;
+        if (patient.status === 'Stable') {
+          pill.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+        } else if (patient.status === 'Moderate') {
+          pill.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
+        } else {
+          pill.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
+        }
+      }
+
+      // 4. Chat logic
+      function renderChat() {
+        const chatArea = document.getElementById('chat-messages');
+        chatArea.innerHTML = '';
+        
+        messages.forEach(msg => {
+          const isBot = msg.sender === 'bot';
+          const outerDiv = document.createElement('div');
+          outerDiv.className = `flex gap-3 max-w-[85%] animate-in fade-in duration-300 ${isBot ? '' : 'ml-auto flex-row-reverse'}`;
+          
+          const avatarContainer = document.createElement('div');
+          avatarContainer.className = "w-9 h-9 rounded-full overflow-hidden shrink-0 border border-slate-100 shadow-sm flex items-center justify-center";
+          avatarContainer.innerHTML = isBot ? SVG_STRINGS.assistant : SVG_STRINGS.user;
+          outerDiv.appendChild(avatarContainer);
+          
+          const bubbleDiv = document.createElement('div');
+          bubbleDiv.className = `flex flex-col gap-1.5`;
+          
+          const textBubble = document.createElement('div');
+          textBubble.className = `px-4.5 py-3 rounded-2xl text-[14px] leading-relaxed shadow-2xs border ${
+            isBot 
+              ? 'bg-white rounded-tl-none border-[#dee8ff] text-[#111c2c]' 
+              : 'bg-[#005f61] rounded-tr-none border-[#005f61] text-white font-medium'
+          }`;
+          
+          // Basic markdown parser for bolding/bullet points
+          let textHTML = msg.text
+            .replace(/\n/g, '<br />')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/•\s(.*?)(<br \/>|$)/g, '<li class="ml-4 list-disc">$1</li>');
+          
+          textBubble.innerHTML = textHTML;
+          bubbleDiv.appendChild(textBubble);
+          
+          // Data cards for specific logs/levels
+          if (msg.dataCard) {
+            const dc = msg.dataCard;
+            const progressPct = Math.min(100, (dc.currentValue / dc.max) * 100);
+            const cardHtml = `
+              <div class="mt-2 bg-white rounded-2xl border border-[#dee8ff] p-4 shadow-sm space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-[12px] font-bold text-[#3e4949] uppercase tracking-wide">${dc.label}</span>
+                  <span class="text-[14px] font-black text-[#ba1a1a]">${dc.value}</span>
+                </div>
+                <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-rose-500 rounded-full" style="width: ${progressPct}%"></div>
+                </div>
+                <div class="flex justify-between text-[11px] text-[#3e4949] font-medium">
+                  <span>Normal: ${dc.normalRange}</span>
+                  <span class="font-bold text-[#ba1a1a]">Elevated</span>
+                </div>
+                <p class="text-[11.5px] text-[#3e4949] leading-relaxed pt-1.5 border-t border-slate-100">${dc.note}</p>
+              </div>
+            `;
+            const cardContainer = document.createElement('div');
+            cardContainer.innerHTML = cardHtml;
+            bubbleDiv.appendChild(cardContainer);
+          }
+
+          // Clinical Source citations
+          if (msg.source && msg.source.title && isBot) {
+            const src = msg.source;
+            const citationBtn = document.createElement('button');
+            citationBtn.onclick = () => showStudyDetails(src);
+            citationBtn.className = "self-start flex items-center gap-1.5 mt-1.5 text-[11px] font-extrabold text-[#005f61] hover:underline bg-[#005f61]/5 px-3 py-1.5 rounded-lg border border-[#005f61]/10 cursor-pointer transition-colors";
+            citationBtn.innerHTML = `
+              <span class="material-symbols-outlined text-[13px] fill">menu_book</span>
+              <span>Evidence: ${src.title}</span>
+            `;
+            bubbleDiv.appendChild(citationBtn);
+          }
+
+          // Retrieved Chunks accordion (RAG evidence panel)
+          if (isBot && msg.retrievedChunks && msg.retrievedChunks.length > 0) {
+            const chunks = msg.retrievedChunks;
+            const accordionId = `chunks-${msg.id}`;
+            const accordion = document.createElement('div');
+            accordion.className = 'mt-2 w-full max-w-xl';
+            accordion.innerHTML = `
+              <button onclick="toggleChunks('${accordionId}')" class="flex items-center gap-2 text-[11px] font-bold text-[#3e4949] hover:text-[#005f61] bg-[#f0f3ff] border border-[#dee8ff] px-3 py-1.5 rounded-lg w-full text-left cursor-pointer transition-colors">
+                <span class="material-symbols-outlined text-[14px]">database</span>
+                <span>Retrieved Evidence (${chunks.length} chunk${chunks.length > 1 ? 's' : ''})</span>
+                <span id="chevron-${accordionId}" class="material-symbols-outlined text-[14px] ml-auto transition-transform">expand_more</span>
+              </button>
+              <div id="${accordionId}" class="hidden mt-1 space-y-2">
+                ${chunks.map((c, i) => `
+                  <div class="bg-white border border-[#dee8ff] rounded-xl p-3 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                      <span class="text-[10px] font-extrabold text-[#005f61] uppercase tracking-wider">#${i+1} · Score ${c.score.toFixed(3)}</span>
+                      ${c.corpus ? `<span class="text-[10px] font-bold text-[#3e4949] bg-[#f0f3ff] px-2 py-0.5 rounded-full shrink-0">${c.corpus}</span>` : ''}
+                    </div>
+                    ${c.heading || c.section_path ? `<p class="text-[11px] font-bold text-[#111c2c]">${c.heading || c.section_path}</p>` : ''}
+                    <p class="text-[12px] text-[#3e4949] leading-relaxed line-clamp-3">${c.text.slice(0, 240)}${c.text.length > 240 ? '…' : ''}</p>
+                    ${c.url && c.url !== '#' ? `<a href="${c.url}" target="_blank" class="text-[10px] font-bold text-[#005f61] hover:underline flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">open_in_new</span>Source</a>` : ''}
+                  </div>`).join('')}
+              </div>
+            `;
+            bubbleDiv.appendChild(accordion);
+          }
+
+          // Verification results (Audit log)
+          if (isBot && msg.verification) {
+            const ver = msg.verification;
+            const isPassed = ver.verdict === 'PASSED';
+            const accordionId = `verifier-${msg.id}`;
+            const verifierPanel = document.createElement('div');
+            verifierPanel.className = 'mt-2 w-full max-w-xl';
+            
+            // Format certainty
+            const certaintyPercent = (ver.certainty * 100).toFixed(0);
+            
+            verifierPanel.innerHTML = `
+              <button onclick="toggleChunks('${accordionId}')" class="flex items-center gap-2 text-[11px] font-bold ${
+                isPassed 
+                  ? 'text-emerald-700 bg-emerald-50/50 border-emerald-200' 
+                  : 'text-red-700 bg-red-50/50 border-red-200'
+              } border px-3 py-1.5 rounded-lg w-full text-left cursor-pointer transition-colors shadow-2xs">
+                <span class="material-symbols-outlined text-[15px] fill">${isPassed ? 'verified_user' : 'gpp_bad'}</span>
+                <span>Clinical Audit: ${ver.verdict} (${certaintyPercent}% Certainty)</span>
+                <span id="chevron-${accordionId}" class="material-symbols-outlined text-[14px] ml-auto transition-transform">expand_more</span>
+              </button>
+              <div id="${accordionId}" class="hidden mt-1.5 bg-white border border-[#dee8ff] rounded-xl p-3.5 space-y-2.5">
+                <div class="grid grid-cols-3 gap-2">
+                  <div class="flex flex-col items-center bg-[#f0f3ff] p-2 rounded-lg border border-[#dee8ff]">
+                    <span class="text-[9px] font-extrabold text-[#3e4949] uppercase tracking-wider">Grounded</span>
+                    <span class="flex items-center gap-1 mt-1 text-[11px] font-black ${ver.is_grounded ? 'text-emerald-600' : 'text-red-600'}">
+                      <span class="material-symbols-outlined text-[14px]">${ver.is_grounded ? 'check_circle' : 'cancel'}</span>
+                      ${ver.is_grounded ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                  <div class="flex flex-col items-center bg-[#f0f3ff] p-2 rounded-lg border border-[#dee8ff]">
+                    <span class="text-[9px] font-extrabold text-[#3e4949] uppercase tracking-wider">Citations</span>
+                    <span class="flex items-center gap-1 mt-1 text-[11px] font-black ${ver.citations_valid ? 'text-emerald-600' : 'text-red-600'}">
+                      <span class="material-symbols-outlined text-[14px]">${ver.citations_valid ? 'check_circle' : 'cancel'}</span>
+                      ${ver.citations_valid ? 'Valid' : 'Invalid'}
+                    </span>
+                  </div>
+                  <div class="flex flex-col items-center bg-[#f0f3ff] p-2 rounded-lg border border-[#dee8ff]">
+                    <span class="text-[9px] font-extrabold text-[#3e4949] uppercase tracking-wider">Clin. Tone</span>
+                    <span class="flex items-center gap-1 mt-1 text-[11px] font-black ${ver.no_personalization ? 'text-emerald-600' : 'text-red-600'}">
+                      <span class="material-symbols-outlined text-[14px]">${ver.no_personalization ? 'check_circle' : 'cancel'}</span>
+                      ${ver.no_personalization ? 'Passed' : 'Failed'}
+                    </span>
+                  </div>
+                </div>
+                ${ver.audit_notes ? `<p class="text-[12px] text-[#3e4949] leading-relaxed border-t border-slate-100 pt-2 font-medium"><strong>Audit Note:</strong> ${ver.audit_notes}</p>` : ''}
+                ${ver.flagged_issues && ver.flagged_issues.length > 0 ? `
+                  <div class="border-t border-slate-100 pt-2 space-y-1">
+                    <p class="text-[10px] font-black text-red-600 uppercase tracking-wider">Flagged Issues:</p>
+                    <ul class="list-disc pl-4 space-y-0.5">
+                      ${ver.flagged_issues.map(iss => `<li class="text-[11.5px] text-red-600 font-semibold">${iss}</li>`).join('')}
+                    </ul>
+                  </div>` : ''}
+              </div>
+            `;
+            bubbleDiv.appendChild(verifierPanel);
+          }
+          
+          const timeSpan = document.createElement('span');
+          timeSpan.className = `text-[10px] text-[#3e4949] font-medium mt-0.5 ${isBot ? 'self-start' : 'self-end'}`;
+          timeSpan.innerText = msg.time;
+          bubbleDiv.appendChild(timeSpan);
+          
+          outerDiv.appendChild(bubbleDiv);
+          chatArea.appendChild(outerDiv);
+        });
+
+        // Auto scroll to bottom
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+
+      async function submitChat(customText = null) {
+        const inputField = document.getElementById('chat-input');
+        const text = customText || inputField.value.trim();
+        if (!text) return;
+        
+        if (!customText) inputField.value = '';
+
+        // Add user message
+        const now = new Date();
+        const userTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messages.push({
+          id: `user-${Date.now()}`,
+          sender: 'user',
+          text: text,
+          time: userTime
+        });
+        renderChat();
+
+        // Show thinking indicator
+        document.getElementById('thinking-indicator').classList.remove('hidden');
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+
+        try {
+          // Send full conversation history for model memory
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: text,
+              history: messages.slice(-12)  // send last 12 messages (6 exchanges)
+            })
+          });
+
+          if (!response.ok) throw new Error("API failed");
+          const data = await response.json();
+
+          // Check if message is lab related to attach custom card
+          let dataCard = undefined;
+          const lower = text.toLowerCase();
+          if (lower.includes('alt') || lower.includes('lab') || lower.includes('enzyme') || lower.includes('check')) {
+            dataCard = {
+              label: 'ALT Level',
+              value: `${markers[0].value} U/L`,
+              max: 60,
+              currentValue: markers[0].value,
+              normalRange: '< 35 U/L',
+              note: 'Slightly elevated from last baseline (38 U/L), but within steady monitoring parameters.'
+            };
+          }
+
+          messages.push({
+            id: `bot-${Date.now()}`,
+            sender: 'bot',
+            text: data.reply || "I've updated your HepaCare monitoring log. How else can I support your liver health today?",
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            source: data.source || undefined,
+            retrievedChunks: data.retrieved_chunks || [],
+            dataCard,
+            verification: data.verification || undefined
+          });
+        } catch (err) {
+          console.error(err);
+          // Fallback response if offline
+          messages.push({
+            id: `bot-fallback-${Date.now()}`,
+            sender: 'bot',
+            text: `Thank you for sharing. Your updates have been noted in your HepaCare telemetry. Current ALT is ${markers[0].value} U/L and AST is ${markers[1].value} U/L. Make sure to stay hydrated and stick to low-sodium meals.`,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            retrievedChunks: []
+          });
+        } finally {
+          document.getElementById('thinking-indicator').classList.add('hidden');
+          renderChat();
+        }
+      }
+
+
+
+      // 5. Modals Management
+      function openModal(modalId) {
+        if (modalId === 'settings') {
+          document.getElementById('settings-name').value = patient.name;
+          document.getElementById('settings-age').value = patient.age;
+          document.getElementById('settings-gender').value = patient.gender;
+          document.getElementById('settings-condition').value = patient.condition;
+        }
+        document.getElementById(`modal-${modalId}`).classList.remove('hidden');
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(`modal-${modalId}`).classList.add('hidden');
+      }
+
+      function saveSettings() {
+        patient.name = document.getElementById('settings-name').value;
+        patient.age = parseInt(document.getElementById('settings-age').value) || 44;
+        patient.gender = document.getElementById('settings-gender').value;
+        patient.condition = document.getElementById('settings-condition').value;
+        
+        syncPatientHeader();
+        closeModal('settings');
+        
+        // Add update alert to chat
+        messages.push({
+          id: `bot-alert-${Date.now()}`,
+          sender: 'bot',
+          text: `ℹ️ **Profile Settings Updated**\n\nPatient parameters successfully synchronized. Healthcare dashboard adapted to: *${patient.condition}*.`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        renderChat();
+      }
+
+      // 7. Clinical Study Display
+      function showStudyDetails(study) {
+        document.getElementById('study-modal-journal').innerText = study.journal;
+        document.getElementById('study-modal-title').innerText = study.title;
+        document.getElementById('study-modal-authors').innerText = study.authors || "Clinical Study Authors";
+        document.getElementById('study-modal-abstract').innerText = study.abstract || "Longitudinal data shows strong correlation between lifestyle adjustments and stabilization of ALT enzymes. RAG search indexes provide precise evidentiary guidelines.";
+        openModal('study');
+      }
+
+      // 7b. Retrieved chunks accordion toggle
+      function toggleChunks(accordionId) {
+        const panel = document.getElementById(accordionId);
+        const chevron = document.getElementById(`chevron-${accordionId}`);
+        if (!panel) return;
+        const isOpen = !panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', isOpen);
+        if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+      }
+
+
+      // 8. Log actions modal form switcher
+      let currentLogTab = 'meal';
+      function openLogActions() {
+        openLogTab('meal');
+        openModal('log-actions');
+      }
+      function openLogTab(tabName) {
+        switchLogTab(tabName);
+      }
+      function switchLogTab(tabId) {
+        currentLogTab = tabId;
+        ['meal', 'symptom', 'lab'].forEach(t => {
+          const btn = document.getElementById(`log-tab-${t}`);
+          const form = document.getElementById(`log-form-${t}`);
+          if (t === tabId) {
+            btn.className = "flex-1 py-4 border-b-2 border-[#005f61] text-[#005f61] text-center font-bold bg-[#dee8ff]/25";
+            form.classList.remove('hidden');
+          } else {
+            btn.className = "flex-1 py-4 border-b-2 border-transparent text-[#3e4949] text-center hover:bg-slate-50";
+            form.classList.add('hidden');
+          }
+        });
+      }
+
+      function submitLogForm() {
+        closeModal('log-actions');
+        
+        if (currentLogTab === 'lab') {
+          const alt = parseInt(document.getElementById('lab-alt').value) || 45;
+          const ast = parseInt(document.getElementById('lab-ast').value) || 32;
+          const bili = parseFloat(document.getElementById('lab-bili').value) || 0.9;
+          const alb = parseFloat(document.getElementById('lab-albumin').value) || 4.2;
+
+          markers[0].value = alt;
+          markers[0].status = alt > 50 ? 'Elevated' : alt > 35 ? 'Slightly Elevated' : 'Normal';
+          markers[0].history.push(alt);
+
+          markers[1].value = ast;
+          markers[1].status = ast > 40 ? 'Elevated' : 'Normal';
+          markers[1].history.push(ast);
+
+          markers[2].value = bili;
+          markers[2].status = bili > 1.2 ? 'Elevated' : 'Normal';
+          markers[2].history.push(bili);
+
+          markers[3].value = alb;
+          markers[3].status = alb < 3.5 ? 'Low' : 'Normal';
+          markers[3].history.push(alb);
+
+          patient.lastUpdated = `Today, ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+          syncPatientHeader();
+
+          submitChat(`I logged new lab results: ALT is ${alt} U/L, AST is ${ast} U/L, Bilirubin is ${bili} mg/dL, Albumin is ${alb} g/dL.`);
+        } 
+        else if (currentLogTab === 'meal') {
+          const desc = document.getElementById('meal-desc').value || "A healthy liver-safe meal";
+          const sodium = document.getElementById('meal-sodium').value;
+          document.getElementById('meal-desc').value = '';
+          
+          submitChat(`I ate: "${desc}" (${sodium} sodium profile). Is this good for my liver?`);
+        } 
+        else if (currentLogTab === 'symptom') {
+          const name = document.getElementById('symptom-name').value;
+          const sev = document.getElementById('symptom-severity').value;
+          const notes = document.getElementById('symptom-notes').value || 'No special notes';
+          document.getElementById('symptom-notes').value = '';
+
+          // Add to heatmap data dynamically
+          const weekToUpdate = "Week 4";
+          const cell = heatmapData.find(c => c.symptom === name && c.week === weekToUpdate);
+          if (cell) {
+            cell.intensity = Math.min(100, Math.round(sev * 10));
+            cell.cases += 1;
+            cell.notes = `Patient updated log: ${notes}`;
+          }
+
+          submitChat(`I am reporting a symptom: ${name} (severity ${sev}/10). Notes: ${notes}`);
+        }
+      }
+
+
+      // 9. Bento tabs and showcase scripts
+      let currentBentoTab = 'alt';
+      const bentoContent = {
+        alt: {
+          title: "ALT (Alanine Transaminase) Telemetry",
+          normal: "< 35 U/L",
+          current: "45 U/L (Slightly Elevated)",
+          explain: "ALT is found predominantly in hepatocytes. A slight elevation indicates mild metabolic overload or cellular turnover, common in early grade steatosis. Monitored for steady reversal."
+        },
+        ast: {
+          title: "AST (Aspartate Transaminase) Telemetry",
+          normal: "10 - 40 U/L",
+          current: "32 U/L (Normal)",
+          explain: "AST is concentrated in cardiac, muscle, and liver tissues. Sarah's ratio (AST/ALT = 0.71) is highly reassuring, indicating the absence of severe fibrosis or necrotic tissue damage."
+        },
+        bili: {
+          title: "Total Bilirubin Telemetry",
+          normal: "0.2 - 1.2 mg/dL",
+          current: "0.9 mg/dL (Normal)",
+          explain: "Bilirubin indicates bile flow status. A normal reading of 0.9 shows no biliary obstruction or impaired red blood cell breakdown, confirming steady excretory clearance."
+        }
+      };
+
+      function switchBentoTab(tab) {
+        currentBentoTab = tab;
+        ['alt', 'ast', 'bili'].forEach(t => {
+          const btn = document.getElementById(`bento-tab-${t}`);
+          if (t === tab) {
+            btn.className = "px-3 py-1 rounded-lg transition-all bg-white text-[#005f61] shadow-2xs font-bold";
+          } else {
+            btn.className = "px-3 py-1 rounded-lg transition-all text-[#3e4949] font-medium hover:text-[#005f61]";
+          }
+        });
+        renderBentoContent();
+      }
+
+      function renderBentoContent() {
+        const data = bentoContent[currentBentoTab];
+        document.getElementById('bento-content-area').innerHTML = `
+          <h3 class="text-[17px] font-black text-[#111c2c]">${data.title}</h3>
+          <div class="grid grid-cols-2 gap-4 mt-2">
+            <div class="bg-[#f0f3ff] p-3.5 rounded-2xl border border-[#dee8ff]">
+              <p class="text-[10px] font-bold text-[#3e4949] uppercase">Normal Range</p>
+              <p class="text-[14px] font-extrabold text-[#111c2c] mt-0.5">${data.normal}</p>
+            </div>
+            <div class="bg-[#f0f3ff] p-3.5 rounded-2xl border border-[#dee8ff]">
+              <p class="text-[14px] font-bold text-[#3e4949] uppercase">Current Level</p>
+              <p class="text-[14px] font-black text-[#005f61] mt-0.5">${data.current}</p>
+            </div>
+          </div>
+          <p class="text-[13px] text-[#3e4949] leading-relaxed pt-2">${data.explain}</p>
+        `;
+      }
+
+      let currentJargonTab = 'empathy';
+      function switchJargonTab(tab) {
+        currentJargonTab = tab;
+        ['jargon', 'empathy'].forEach(t => {
+          const btn = document.getElementById(`jargon-tab-${t}`);
+          if (t === tab) {
+            btn.className = "px-2.5 py-1 rounded-lg transition-all bg-white text-[#005f61] shadow-2xs font-bold";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-lg transition-all text-[#3e4949] font-medium hover:text-[#005f61]";
+          }
+        });
+        document.getElementById('jargon-content').innerText = jargonContent[tab];
+        document.getElementById('jargon-title').innerText = tab === 'jargon' ? 'Clinical Abstraction' : 'Patient Care Translation';
+      }
+
+      function copyMockEHR() {
+        const ehrText = `## CLINICAL ENCOUNTER SUMMARY - HepaCare Telemetry\n` +
+          `- Patient: ${patient.name} (Age ${patient.age}, ${patient.gender})\n` +
+          `- Target Diagnosis: ${patient.condition}\n` +
+          `- Status Classification: ${patient.status} (${patient.statusDetail})\n` +
+          `- Latest Lab Markers: ALT ${markers[0].value} U/L (normal <35), AST ${markers[1].value} U/L (normal 10-40), Bilirubin ${markers[2].value} mg/dL\n` +
+          `- Encounter Date: ${new Date().toLocaleDateString()}\n` +
+          `- Telemetry Summary Notes: ${patient.notes}\n`;
+        
+        navigator.clipboard.writeText(ehrText).then(() => {
+          const btnText = document.getElementById('ehr-btn-text');
+          btnText.innerText = "Copied to Clipboard!";
+          setTimeout(() => {
+            btnText.innerText = "Copy EHR Summary";
+          }, 2000);
+        }).catch(err => {
+          alert("EHR copied: \n" + ehrText);
+        });
+      }
+
+      // 11. Mobile drawer toggle
+      function toggleMobileDrawer(show) {
+        const drawer = document.getElementById('mobile-drawer');
+        if (show) {
+          drawer.classList.remove('hidden');
+        } else {
+          drawer.classList.add('hidden');
+        }
+      }
+
+      // 12. App Initialization
+      window.onload = () => {
+        // Sync structures
+        syncPatientHeader();
+        renderChat();
+        switchBentoTab('alt');
+        switchJargonTab('empathy');
+        // Start on the Showcase landing page
+        switchTab('showcase');
+      };
+    </script>
+  </body>
+</html>

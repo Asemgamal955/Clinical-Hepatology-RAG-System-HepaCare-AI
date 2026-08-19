@@ -1,65 +1,41 @@
 import argparse
 import os
+import sys
+import uvicorn
 from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
-from src.vector_db.collections import get_collection
-from src.indexing.parse import main as run_parse_chunk
-from src.vector_db.collections import build as run_build_index
-from src.generation import run_rag
-
-
-# ==========================================
-# 1. Pipeline Indexing Routine
-# ==========================================
-
-def index_pipeline():
-    """Run end-to-end processing from raw files into Chroma vector store."""
-    print("=== Step 1: Parsing & Chunking Raw Data ===")
-    run_parse_chunk()
-
-    print("\n=== Step 2: Embedding & Indexing into Chroma ===")
-    run_build_index()
-    print("\nIndexing completed successfully!")
-
-
-# ==========================================
-# 2. CLI Entry Point
-# ==========================================
+def start_server(host: str, port: int):
+    print(f"Starting Clinical Hepatology FastAPI server on {host}:{port}...")
+    uvicorn.run("src.api.main:app", host=host, port=port, reload=False)
 
 def main():
-    parser = argparse.ArgumentParser(description="End-to-End RAG System with Gemini & Cohere")
-    parser.add_argument("--index", action="store_true", help="Parse data and generate vector index")
-    parser.add_argument("--query", type=str, help="Run RAG query against stored knowledge base")
-    parser.add_argument("--top-k", type=int, default=5, help="Number of chunks to retrieve (default: 4)")
-
+    parser = argparse.ArgumentParser(description="Clinical Hepatology RAG System Service & CLI Runner")
+    parser.add_argument("--host", type=str, default="127.0.0.1", help="API host server address")
+    parser.add_argument("--port", type=int, default=8000, help="API server port number")
+    parser.add_argument("--index", action="store_true", help="Synchronously build/rebuild the vector index")
+    parser.add_argument("--query", type=str, help="Synchronously execute a single RAG query locally")
+    parser.add_argument("--top-k", type=int, default=5, help="Number of chunks to retrieve for queries")
+    
     args = parser.parse_args()
-
+    
     if args.index:
-        index_pipeline()
+        from src.indexing.parse import main as run_parse_chunk
+        from src.vector_db.collections import build as run_build_index
+        print("\n=== CLI ROUTINE: Building Index ===")
+        run_parse_chunk()
+        run_build_index()
+        print("\n=== CLI ROUTINE: Index Completed successfully! ===")
     elif args.query:
+        from src.generation.pipeline import run_rag
+        print(f"\n=== CLI ROUTINE: Querying '{args.query}' ===")
         run_rag(args.query, top_k=args.top_k)
     else:
-        # Interactive loop if no flags supplied
-        if get_collection().count() == 0:
-            print("No index detected. Building vector index now...")
-            index_pipeline()
-
-        print("\n=== Interactive RAG System ready! (Type 'exit' to quit) ===")
-        while True:
-            try:
-                user_input = input("\nAsk a question > ").strip()
-                if not user_input:
-                    continue
-                if user_input.lower() in ("exit", "quit"):
-                    break
-                run_rag(user_input, top_k=args.top_k)
-            except KeyboardInterrupt:
-                break
-
+        # Default action: run the FastAPI web application
+        start_server(args.host, args.port)
 
 if __name__ == "__main__":
     main()
