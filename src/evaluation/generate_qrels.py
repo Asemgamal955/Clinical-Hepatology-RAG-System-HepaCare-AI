@@ -114,6 +114,10 @@ class RelevanceJudgement(BaseModel):
         default_factory=list,
         description="List of IDs of candidate passages that contain relevant information answering or providing essential context for the query."
     )
+    ground_truth: str = Field(
+        default="",
+        description="The answer to the query, written using ONLY facts stated in the candidate passages."
+    )
 
 
 _JUDGE_SYSTEM = (
@@ -121,7 +125,11 @@ _JUDGE_SYSTEM = (
     "You will be given a user Query and a list of Candidate Passages (each with an ID and Text). "
     "Determine which of the Candidate Passages contain factual information that directly answers, "
     "partially answers, or provides essential context for the Query. "
-    "Return only the list of relevant chunk IDs in the structured response."
+    "Then write a ground_truth answer to the Query using ONLY information found in the Candidate "
+    "Passages you judged relevant. Do not use outside knowledge, do not add facts that are not "
+    "stated in the passages, and do not guess. If the passages do not fully answer the query, "
+    "answer only with what the passages support. "
+    "Return only the list of relevant chunk IDs and the ground_truth answer in the structured response."
 )
 
 def judge_relevance_pool(
@@ -130,17 +138,18 @@ def judge_relevance_pool(
     llm: Gemini,
     pool_size: int = 10,
     max_retries: int = 3,
-) -> list[str]:
+) -> tuple[list[str], str]:
     """
     Retrieve top candidate chunks for the query, and ask Gemini to judge which
-    chunks are relevant. Guarantees the source_chunk is included in the ground-truth.
+    chunks are relevant and to write a ground_truth answer grounded only in
+    those passages. Guarantees the source_chunk is included in relevant_ids.
     """
     # 1. Retrieve candidates using existing retriever
     try:
         retrieved_candidates = retrieve(query, top_k=pool_size)
     except Exception as e:
         print(f"    [retriever-warning] {e}")
-        return [source_chunk["id"]]
+        return [source_chunk["id"]], ""
 
     # 2. Build Candidate Pool (ensure source_chunk is present)
     candidate_dict = {c["id"]: c for c in retrieved_candidates}
@@ -171,14 +180,14 @@ def judge_relevance_pool(
             # Keep only valid IDs from the candidate pool
             valid_pool_ids = set(candidate_dict.keys())
             final_ids = list(relevant_set.intersection(valid_pool_ids))
-            return final_ids
+            return final_ids, judgement.ground_truth.strip()
         except Exception as exc:
             wait = 2 ** attempt
             print(f"    [judge-retry {attempt + 1}/{max_retries}] {type(exc).__name__}: sleeping {wait}s")
             time.sleep(wait)
 
     # Fallback to source chunk if judge fails
-    return [source_chunk["id"]]
+    return [source_chunk["id"]], ""
 
 
 # ==============================================================================
@@ -245,7 +254,7 @@ def main():
                 continue
 
             # Step 2: Pool & Judge Multi-Relevance
-            relevant_ids = judge_relevance_pool(
+            relevant_ids, ground_truth = judge_relevance_pool(
                 query=question,
                 source_chunk=chunk,
                 llm=llm,
@@ -257,6 +266,7 @@ def main():
             record = {
                 "query":        question,
                 "relevant_ids": relevant_ids,
+                "ground_truth": ground_truth,
                 "source_chunk": chunk["id"],
             }
             fh.write(json.dumps(record, ensure_ascii=False) + "\n")

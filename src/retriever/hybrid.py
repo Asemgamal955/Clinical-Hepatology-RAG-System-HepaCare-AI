@@ -16,6 +16,8 @@ corpus changes.
 Usage:  python -m src.retriever.hybrid "your question"
 """
 
+from PIL import ImagePalette
+from pickle import TRUE
 import json
 import re
 import sys
@@ -120,6 +122,7 @@ def hybrid_search(
     parse=True,
     keep_raw=KEEP_RAW_QUERY,
     raw_weight=RAW_WEIGHT,
+    rewriting=True
 ):
     """
     Run both legs and fuse by weighted reciprocal rank.
@@ -136,7 +139,9 @@ def hybrid_search(
     to get the right chunk somewhere into the shortlist rather than at the top,
     so the exact leg weights matter much less.
     """
-    if isinstance(query, ParsedQuery):
+    if not rewriting:
+        return dense_search(query, k=k, corpus=corpus, topic=topic, section=section)
+    elif isinstance(query, ParsedQuery):
         parsed = query
     elif parse:
         parsed = parse_query(query)

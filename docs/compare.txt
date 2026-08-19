@@ -1,0 +1,38 @@
+no_rewriting
+==========================================================================================
+  RETRIEVAL EVALUATION REPORT   (k=5, queries=10)
+==========================================================================================
+  Query                                                 P@5    R@5    AP@5    RR
+  ----------------------------------------------------  -----  -----  -----  -----
+  What methods do doctors use to diagnose hepatitis C?  0.200  0.500  0.500  1.000
+  What is the most important risk factor for hepatiti…  0.600  1.000  1.000  1.000
+  What is the USPSTF recommendation regarding screeni…  0.200  0.250  0.250  1.000
+  What are the complications of biliary atresia?        0.200  1.000  1.000  1.000
+  What are the potential complications of autoimmune …  0.800  1.000  0.950  1.000
+  How does Alagille syndrome affect nutrition?          0.400  1.000  1.000  1.000
+  Why did the USPSTF conclude that the age range for …  0.200  0.500  0.167  0.333
+  Where can you find a list of clinical studies for W…  0.200  0.500  0.500  1.000
+  What is the US Preventive Services Task Force recom…  0.400  0.286  0.400  1.000
+  How can you prevent the spread of hepatitis D to ot…  0.200  1.000  1.000  1.000
+
+  MACRO AVERAGE                                         0.340  0.704  0.677  0.933
+==========================================================================================
+REwriting
+==========================================================================================
+  RETRIEVAL EVALUATION REPORT   (k=5, queries=10)
+==========================================================================================
+  Query                                                 P@5    R@5    AP@5    RR
+  ----------------------------------------------------  -----  -----  -----  -----
+  What methods do doctors use to diagnose hepatitis C?  0.400  1.000  1.000  1.000
+  What is the most important risk factor for hepatiti…  0.600  1.000  1.000  1.000
+  What is the USPSTF recommendation regarding screeni…  0.400  0.500  0.417  1.000
+  What are the complications of biliary atresia?        0.200  1.000  1.000  1.000
+  What are the potential complications of autoimmune …  0.800  1.000  1.000  1.000
+  How does Alagille syndrome affect nutrition?          0.400  1.000  1.000  1.000
+  Why did the USPSTF conclude that the age range for …  0.200  0.500  0.500  1.000
+  Where can you find a list of clinical studies for W…  0.400  1.000  0.833  1.000
+  What is the US Preventive Services Task Force recom…  0.800  0.571  0.760  1.000
+  How can you prevent the spread of hepatitis D to ot…  0.200  1.000  1.000  1.000
+
+  MACRO AVERAGE                                         0.440  0.857  0.851  1.000
+==========================================================================================

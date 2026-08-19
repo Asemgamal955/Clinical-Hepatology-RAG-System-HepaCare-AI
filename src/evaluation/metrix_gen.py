@@ -159,7 +159,7 @@ def main():
         query = q_item["query"]
         relevant_ids = q_item.get("relevant_ids", [])
 
-        ground_truth = q_item.get("response")
+        ground_truth = q_item.get("ground_truth")
         if not ground_truth:
             ground_truth = "\n\n".join(
                 [chunks_map[rid] for rid in relevant_ids if rid in chunks_map]
