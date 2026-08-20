@@ -35,7 +35,7 @@ A production-grade Clinical Retrieval-Augmented Generation (RAG) system speciali
 
 Watch the **Clinical Hepatology RAG System & HepaCare AI** in action:
 
-[▶️ Watch the Full Demo](https://github.com/MohamedAlaa2005/Clinical-Hepatology-RAG-System-HepaCare-AI/issues/1)
+https://github.com/MohamedAlaa2005/Clinical-Hepatology-RAG-System-HepaCare-AI/assets/141934524/638668480-510e86da-69eb-4787-b8b2-20b8c3bcea8a
 
 ## 🏗️ System Architecture
 
