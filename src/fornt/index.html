@@ -802,7 +802,7 @@
           }
 
           // Clinical Source citations
-          if (msg.source && msg.source.title && isBot) {
+          if (msg.source && msg.source.title && isBot && msg.retrievedChunks && msg.retrievedChunks.length > 0) {
             const src = msg.source;
             const citationBtn = document.createElement('button');
             citationBtn.onclick = () => showStudyDetails(src);
@@ -949,6 +949,36 @@
           if (!response.ok) throw new Error("API failed");
           const data = await response.json();
 
+          // Client-side verification/check for Evidence and Citation in reply
+          const replyText = data.reply || "";
+          let hasRealEvidence = false;
+          let hasRealCitation = false;
+
+          if (replyText.includes("Evidence:")) {
+            let evidencePart = replyText.split("Evidence:", 2)[1];
+            let evidenceContent = "";
+            if (evidencePart.includes("Citation:")) {
+              evidenceContent = evidencePart.split("Citation:", 2)[0].trim();
+            } else {
+              evidenceContent = evidencePart.trim();
+            }
+            const cleanEv = evidenceContent.toLowerCase();
+            if (evidenceContent.length > 3 && cleanEv !== "none" && cleanEv !== "n/a" && cleanEv !== "not applicable" && cleanEv !== "none." && cleanEv !== "n/a.") {
+              hasRealEvidence = true;
+            }
+          }
+
+          if (replyText.includes("Citation:")) {
+            let citationContent = replyText.split("Citation:", 2)[1].trim();
+            const cleanCit = citationContent.toLowerCase();
+            const hasPlaceholders = ["<chunk id>", "<source>", "<topic>", "<section>"].some(p => citationContent.includes(p));
+            if (citationContent.length > 5 && cleanCit !== "none" && cleanCit !== "n/a" && cleanCit !== "not applicable" && cleanCit !== "none." && cleanCit !== "n/a." && !hasPlaceholders) {
+              hasRealCitation = true;
+            }
+          }
+
+          const hasEvidenceAndCitation = hasRealEvidence && hasRealCitation;
+
           // Check if message is lab related to attach custom card
           let dataCard = undefined;
           const lower = text.toLowerCase();
@@ -966,12 +996,12 @@
           messages.push({
             id: `bot-${Date.now()}`,
             sender: 'bot',
-            text: data.reply || "I've updated your HepaCare monitoring log. How else can I support your liver health today?",
+            text: replyText || "I've updated your HepaCare monitoring log. How else can I support your liver health today?",
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            source: data.source || undefined,
-            retrievedChunks: data.retrieved_chunks || [],
+            source: hasEvidenceAndCitation ? (data.source || undefined) : undefined,
+            retrievedChunks: hasEvidenceAndCitation ? (data.retrieved_chunks || []) : [],
             dataCard,
-            verification: data.verification || undefined
+            verification: hasEvidenceAndCitation ? (data.verification || undefined) : undefined
           });
         } catch (err) {
           console.error(err);

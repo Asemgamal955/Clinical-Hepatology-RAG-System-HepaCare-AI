@@ -423,32 +423,55 @@ async def chat_interaction(request: ChatRequest):
                 url="#"
             )
 
-        # Run clinical verification on candidate answer against retrieved context
+        # Check if the candidate response contains actual, populated Evidence and Citation sections
+        has_real_evidence = False
+        has_real_citation = False
+
+        if "Evidence:" in ans:
+            evidence_part = ans.split("Evidence:", 1)[1]
+            if "Citation:" in evidence_part:
+                evidence_content = evidence_part.split("Citation:", 1)[0].strip()
+            else:
+                evidence_content = evidence_part.strip()
+            if len(evidence_content) > 3 and evidence_content.lower() not in ["none", "n/a", "not applicable", "no evidence", "none.", "n/a."]:
+                has_real_evidence = True
+
+        if "Citation:" in ans:
+            citation_content = ans.split("Citation:", 1)[1].strip()
+            if len(citation_content) > 5 and citation_content.lower() not in ["none", "n/a", "not applicable", "none.", "n/a."] and not any(p in citation_content for p in ["<chunk id>", "<source>", "<topic>", "<section>"]):
+                has_real_citation = True
+
+        has_evidence_and_citation = has_real_evidence and has_real_citation
+
+        # Run clinical verification on candidate answer against retrieved context if structured
         verification_data = None
-        try:
-            from src.generation.verifier import verify_generation
-            from src.api.schemas import ChatVerificationResponse
-            verification_res = verify_generation(
-                query=request.message,
-                retrieved_chunks=rag_data.get("filtered_chunks", []),
-                candidate_output=ans
-            )
-            verification_data = ChatVerificationResponse(
-                verdict=verification_res.verdict,
-                is_grounded=verification_res.is_grounded,
-                citations_valid=verification_res.citations_valid,
-                no_personalization=verification_res.no_personalization,
-                certainty=verification_res.rerank_certainty,
-                audit_notes=verification_res.audit_notes,
-                flagged_issues=verification_res.flagged_issues
-            )
-        except Exception as ver_err:
-            print(f"⚠️ Verification failed: {ver_err}")
+        chunks_to_return = retrieved_chunks if has_evidence_and_citation else []
+
+        if has_evidence_and_citation:
+            try:
+                from src.generation.verifier import verify_generation
+                from src.api.schemas import ChatVerificationResponse
+                verification_res = verify_generation(
+                    query=request.message,
+                    retrieved_chunks=rag_data.get("filtered_chunks", []),
+                    candidate_output=ans
+                )
+                verification_data = ChatVerificationResponse(
+                    verdict=verification_res.verdict,
+                    is_grounded=verification_res.is_grounded,
+                    citations_valid=verification_res.citations_valid,
+                    no_personalization=verification_res.no_personalization,
+                    certainty=verification_res.rerank_certainty,
+                    audit_notes=verification_res.audit_notes,
+                    flagged_issues=verification_res.flagged_issues
+                )
+            except Exception as ver_err:
+                print(f"⚠️ Verification failed: {ver_err}")
 
         return ChatResponse(
             reply=ans,
             source=source_data,
-            retrieved_chunks=retrieved_chunks,
+            retrieved_chunks=chunks_to_return,
             verification=verification_data
         )
 

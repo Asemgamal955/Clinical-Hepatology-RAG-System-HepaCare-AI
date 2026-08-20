@@ -1,4 +1,0 @@
-RETRIEVAL EVALUATION ERROR
-==========================================================================================
-
-write() argument must be str, not None
