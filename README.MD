@@ -72,6 +72,8 @@ graph TD
 
 ```
 ├── app.py                     # CLI Tool & Server Launcher
+├── Dockerfile                 # Docker configuration
+├── .dockerignore              # Excluded files for Docker build
 ├── requirements.txt           # Project Dependencies
 ├── retrieval_test.py          # Interactive Evaluation & Retrieval Test Utility
 ├── .env.example               # Example Configuration Variables
@@ -156,6 +158,20 @@ python app.py --host 127.0.0.1 --port 8000
 Once started:
 - Access the **HepaCare AI Frontend** at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 - Access the **Interactive API Docs (Swagger)** at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+### 4. Run with Docker
+You can build and run the application in a lightweight container:
+
+**Build the Docker image**:
+```bash
+docker build -t hepatology-rag .
+```
+
+**Run the container**:
+```bash
+docker run -p 8000:8000 --env-file .env hepatology-rag
+```
+Once started, the HepaCare AI Frontend will be available at [http://localhost:8000/](http://localhost:8000/).
 
 ---
 
