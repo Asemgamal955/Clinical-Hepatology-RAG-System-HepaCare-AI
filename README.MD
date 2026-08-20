@@ -31,6 +31,11 @@ A production-grade Clinical Retrieval-Augmented Generation (RAG) system speciali
   - **Wellness Telemetry**: A simulated health assessment scoring liver wellness based on user-provided metrics (e.g., fatigue level, pain location, dietary adherence).
 
 ---
+## 🎥 Project Demo
+
+Watch the **Clinical Hepatology RAG System & HepaCare AI** in action:
+
+[▶️ Watch the Full Demo](https://github.com/MohamedAlaa2005/Clinical-Hepatology-RAG-System-HepaCare-AI/issues/1)
 
 ## 🏗️ System Architecture
 
